@@ -3,7 +3,7 @@
     <declare-styleable name="Circle">
         <attr name="startValue" format="float" />
         <attr name="fullValue" format="float" />
-        <attr name="stepValue" format="float" />
+        <attr name="stepValue" format="integer" />
         <attr name="fontSize" format="dimension" />
         <attr name="lineWidth" format="dimension" />
         <attr name="circleTextMargin" format="dimension" />

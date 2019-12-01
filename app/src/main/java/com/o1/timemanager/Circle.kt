@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -17,14 +18,15 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
         array.getFloat(R.styleable.Circle_startValue, 10f)
     private val fullValue: Float =
         array.getFloat(R.styleable.Circle_fullValue, 120f)
-    private val stepValue: Float =
-        array.getFloat(R.styleable.Circle_stepValue, 5f)
-    var filledValue: Float = startValue + 50f
+    private val scrollStepValue: Float = 1f
+    private val stepValue: Int =
+        array.getInt(R.styleable.Circle_stepValue, 5)
+    var filledValue: Float = startValue
 
     private var wCenter: Float = 0f
     private var hCenter: Float = 0f
     private val lineWidth: Float =
-        array.getDimension(R.styleable.Circle_lineWidth, 10f.px)
+        array.getDimension(R.styleable.Circle_lineWidth, 15f.px)
     private val pointSize: Float = lineWidth
     private val fontSize: Float =
         array.getDimension(R.styleable.Circle_fontSize, 50f.px)
@@ -57,15 +59,26 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
     private var diameter: Float = 0.0f
     private lateinit var oval: RectF
 
+    var timerStarted: Boolean = false
+    var minutes: Int = 0
+    private var seconds: Int = 0
+
+    private lateinit var countdownTimer: CountDownTimer
+
     init {
         isClickable = true
     }
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val fillAng = (filledValue - startValue)*360f/(fullValue - startValue)
+        val fillAng = (filledValue + seconds.toFloat() / 60f - startValue)*360f/(fullValue - startValue)
         pointCenterX = (wCenter + diameter / 2 * cos((fillAng - 90f) * PI / 180f)).toFloat()
         pointCenterY = (hCenter + diameter / 2 * sin((fillAng - 90f) * PI / 180f)).toFloat()
+        minutes = if (!timerStarted) {
+            round(filledValue / stepValue).toInt() * stepValue
+        } else {
+            filledValue.toInt()
+        }
         canvas.apply {
             drawArc(oval, -90f,fillAng,false, arcFillPen)
             drawArc(oval, fillAng - 90f, 360f-fillAng, false, arcEmptyPen)
@@ -75,7 +88,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 pointSize, pointPen
             )
 
-            drawText(filledValue.toInt().toString() + ":00", wCenter, hCenter + diameter/2 + circleTextMargin + fontSize, textPen)
+            drawText(String.format("%02d", minutes) + ":" + String.format("%02d", seconds), wCenter, hCenter + diameter/2 + circleTextMargin + fontSize, textPen)
         }
     }
 
@@ -110,7 +123,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 distanceX: Float,
                 distanceY: Float
             ): Boolean {
-                if (touchPoint) {
+                if (touchPoint && !timerStarted) {
                     var filledAng = acos(
                         dotProd(e2.x - wCenter, e2.y - hCenter, 0f, -1f) /
                                 distance(e2.x, e2.y, wCenter, hCenter)
@@ -119,14 +132,14 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
                         filledAng = (2*PI - filledAng).toFloat()
                     }
                     val tmpAng = (filledAng / PI/2 * (fullValue - startValue) + startValue).toFloat()
-                    val tmpValue = round(tmpAng / stepValue) * stepValue
-                    val mid = (startValue + fullValue) / 2
-                    if (abs(filledValue - tmpValue) < mid) {
+                    val tmpValue = round(tmpAng / scrollStepValue) * scrollStepValue
+                    val eps = (fullValue - startValue) / 2
+                    if (abs(filledValue - tmpValue) < eps) {
                         filledValue = tmpValue
                         postInvalidate()
                     }
                     else {
-                        filledValue = if (filledValue > mid) {
+                        filledValue = if (filledValue > (fullValue + startValue) / 2) {
                             fullValue
                         } else {
                             startValue
@@ -154,6 +167,36 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
     private fun dotProd(a1: Float, b1: Float, a2: Float, b2: Float): Float {
         return a1*a2+b1*b2
+    }
+
+    fun countDown() {
+        if (seconds == 0) {
+            filledValue -= 1
+            seconds = 59
+        }
+        else {
+            seconds -= 1
+        }
+        postInvalidate()
+    }
+
+    fun startTimer() {
+        countdownTimer = object : CountDownTimer(minutes.toLong()*60*1000, 1000) {
+            override fun onFinish() {
+                println("Finish")
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                countDown()
+            }
+        }
+        timerStarted = true
+        filledValue = minutes.toFloat()
+        countdownTimer.start()
+    }
+    fun stopTimer() {
+        timerStarted = false
+        countdownTimer.cancel()
     }
 
     val Float.dp: Float

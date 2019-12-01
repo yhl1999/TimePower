@@ -4,17 +4,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#50A387"
+    android:background="@color/background"
     tools:context=".MainActivity">
 
-    <Button
-        android:id="@+id/change"
-        android:text="开始"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/circle"
-        app:layout_constraintLeft_toLeftOf="parent"
-        app:layout_constraintRight_toRightOf="parent"/>
     <com.o1.timemanager.Circle
         android:id="@+id/circle"
         android:layout_width="match_parent"
@@ -26,5 +18,54 @@
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintRight_toRightOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ic_wife"
+        android:layout_width="104dp"
+        android:layout_height="112dp"
+        android:contentDescription="anim_wife"
+        app:layout_constraintTop_toTopOf="@id/circle"
+        app:layout_constraintBottom_toBottomOf="@id/circle"
+        app:layout_constraintLeft_toLeftOf="@id/circle"
+        app:layout_constraintRight_toRightOf="@id/circle" />
+    <TextView
+        android:id="@+id/coin_value"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/coin_field_height"
+        android:layout_margin="30dp"
+        android:background="@drawable/background_coin"
+        android:text="100000000"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/coin_size"
+        app:fontFamily="@font/lato_light"
+        android:gravity="center"
+        android:textAlignment="center"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/coin_icon"
+        android:layout_width="@dimen/coin_field_height"
+        android:layout_height="@dimen/coin_field_height"
+        android:contentDescription="coin_icon"
+        app:layout_constraintLeft_toLeftOf="@id/coin_value"
+        app:layout_constraintTop_toTopOf="@id/coin_value"
+        app:srcCompat="@drawable/ic_coin" />
+    <Button
+        android:id="@+id/change"
+        android:text="开始"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/circle"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <Button
+        android:id="@+id/team"
+        android:text="组队"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        app:layout_constraintTop_toBottomOf="@id/change"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
 
 </androidx.constraintlayout.widget.ConstraintLayout>
