@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.res.Resources
 import android.graphics.*
 import android.graphics.Paint.ANTI_ALIAS_FLAG
+import android.os.CountDownTimer
 import android.util.AttributeSet
 import android.view.GestureDetector
 import android.view.MotionEvent
@@ -61,6 +62,8 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
     var timerStarted: Boolean = false
     var minutes: Int = 0
     private var seconds: Int = 0
+
+    private lateinit var countdownTimer: CountDownTimer
 
     init {
         isClickable = true
@@ -175,6 +178,25 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
             seconds -= 1
         }
         postInvalidate()
+    }
+
+    fun startTimer() {
+        countdownTimer = object : CountDownTimer(minutes.toLong()*60*1000, 1000) {
+            override fun onFinish() {
+                println("Finish")
+            }
+
+            override fun onTick(millisUntilFinished: Long) {
+                countDown()
+            }
+        }
+        timerStarted = true
+        filledValue = minutes.toFloat()
+        countdownTimer.start()
+    }
+    fun stopTimer() {
+        timerStarted = false
+        countdownTimer.cancel()
     }
 
     val Float.dp: Float

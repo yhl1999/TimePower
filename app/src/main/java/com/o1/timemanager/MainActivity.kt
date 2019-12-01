@@ -1,12 +1,13 @@
 package com.o1.timemanager
 
-import androidx.appcompat.app.AppCompatActivity
+import android.content.res.Resources
+import android.graphics.Rect
 import android.os.Bundle
-import android.os.CountDownTimer
+import android.os.Handler
+import androidx.appcompat.app.AppCompatActivity
 import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : AppCompatActivity() {
-    private lateinit var countdownTimer: CountDownTimer
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -15,28 +16,36 @@ class MainActivity : AppCompatActivity() {
         change.setOnClickListener {
             if (circle.timerStarted) {
                 change.text = "开始"
-                circle.timerStarted = false
-                countdownTimer.cancel()
-            }
-            else {
-                countdownTimer = object : CountDownTimer(circle.minutes.toLong()*60*1000, 1000) {
-                    override fun onFinish() {
-                        println("Finish")
-                    }
-
-                    override fun onTick(millisUntilFinished: Long) {
-                        circle.countDown()
-                    }
-                }
+                circle.stopTimer()
+            } else {
                 change.text = "暂停"
-                circle.timerStarted = true
-                circle.filledValue = circle.minutes.toFloat()
-                countdownTimer.start()
+                circle.startTimer()
             }
         }
 
-        team.setOnClickListener {
+        var resNum = 1
+        val handler = Handler()
+        val runnable = object : Runnable {
+            override fun run() {
+                resNum = resNum % 3 + 1
+                ic_wife.setImageResource(
+                    resources.getIdentifier(
+                        "ic_wife_2_$resNum",
+                        "drawable",
+                        packageName
+                    )
+                )
+                handler.postDelayed(this, 500)
+            }
+        }
 
+        handler.postDelayed(runnable, 500)
+        team.setOnClickListener {
+            ic_wife.clipBounds = Rect(0,0,104.px,112.px)
         }
     }
+    val Int.dp: Int
+        get() = (this / Resources.getSystem().displayMetrics.density).toInt()
+    val Int.px: Int
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 }
