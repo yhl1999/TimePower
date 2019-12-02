@@ -14,7 +14,6 @@ session = create_session(bind = engine)
 class User(Base):
     __table__ = Table('user',metadata,autoload = True)
 
-    
     #构造函数
     def __init__(self,account,password,username,rdate,headpic,coin,role):
         self.account = account
@@ -64,10 +63,10 @@ class User(Base):
         if isinstance(e,int):
             if e>1:
                 print("数据错误！存在多个相同账号！")
-                return False
+                return 3
             elif e==0 :
                 print("账号不存在")
-                return False
+                return 2
         else :           
             if code == 1:
                 e.coin +=num
@@ -75,10 +74,10 @@ class User(Base):
                 e.coin -=num
             else:
                 print("操作码错误")
-                return False
+                return 1
             session.begin()
             session.commit()
-            return True
+            return 0
             
     
     #修改密码 测试完毕
@@ -95,11 +94,54 @@ class User(Base):
         else:
             if e.password == oldPwd :
                 e.password = newPwd
+                session.begin()
+                session.commit()
                 return 0
             else:
                 print("原密码错误")
                 return 1
     
+    #修改头像 未测试
+    def changeHpic(userAcnt,newHpic):
+        e = User.ifAcntExist(userAcnt)
 
+        if isinstance(e,int):
+            if e>1:
+                print("数据错误！存在多个相同账号！")
+                return 3
+            elif e==0 :
+                print("账号不存在")
+                return 2
+        else:
+            e.headpic = newHpic
+            session.begin()
+            session.commit()
+            return 0
 
+    def changeNickname(userAcnt,newName):
+        e = User.ifAcntExist(userAcnt)
 
+        if isinstance(e,int):
+            if e>1:
+                print("数据错误！存在多个相同账号！")
+                return 3
+            elif e==0 :
+                print("账号不存在")
+                return 2
+        else:
+            e.nickname = newName
+            session.begin()
+            session.commit()
+            return 0
+    
+class Role(Base):
+    __table__ = Table('role',metadata,autoload = True)
+
+class Activity(Base):
+    __table__ = Table('activity',metadata,autoload = True)
+
+class Act_User(Base):
+    __table__ = Table('activity-user',metadata,autoload = True)
+
+class User_Role(Base):
+    __table__ = Table('user-role',metadata,autoload = True)
