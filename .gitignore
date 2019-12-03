@@ -12,3 +12,6 @@
 /captures
 .externalNativeBuild
 .cxx
+
+Server/__pycache__
+*.pyc
