@@ -4,7 +4,7 @@
     android:viewportWidth="1404"
     android:viewportHeight="504">
     <group
-        android:name="wife2"
+        android:name="item2"
         android:translateX="0">
         <path
             android:fillColor="#feba77"

@@ -20,10 +20,10 @@
         app:layout_constraintTop_toTopOf="parent" />
 
     <ImageView
-        android:id="@+id/ic_wife"
+        android:id="@+id/ic_item"
         android:layout_width="104dp"
         android:layout_height="112dp"
-        android:contentDescription="anim_wife"
+        android:contentDescription="anim_item"
         app:layout_constraintTop_toTopOf="@id/circle"
         app:layout_constraintBottom_toBottomOf="@id/circle"
         app:layout_constraintLeft_toLeftOf="@id/circle"
