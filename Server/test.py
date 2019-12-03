@@ -10,12 +10,12 @@ def show(rest):
 
 #addUser测试
 def tst_addUser():
-    act = "tst_adduser2.0"
+    act = "tst_adduser2.3"
     pwd = "123456"
     rest = session.query(User).all()
     show(rest)
 
-    User.addUser(act,pwd)
+    api.addUser(act,pwd)
 
     rest = session.query(User).all()
     show(rest)
@@ -62,6 +62,6 @@ def tst_changePwd():
     User.changePwd(act,pwd,npwd)
     rest = session.query(User).all()
     show(rest)
-#tst_addUser()
+tst_addUser()
 #tst_changeCoin()
-tst_changePwd()
+#tst_changePwd()

@@ -107,14 +107,8 @@ This is an intersting time management software
 
 #### 创建活动（单人）_crtAct
 + 接口编号：
-+ 参数：用户账号_userAcnt，活动信息_actInfo，开始时间_startT
++ 参数：用户账号_userAcnt，活动类型actType，活动信息_actInfo，开始时间_startT
 + 功能：创建活动信息，写入activity表
-
-#### 创建活动（多人）_crtAct2
-+ 接口编号：
-+ 参数：用户账号_userAcnt，活动信息_actInfo，开始时间_startT
-
-
 
 #### 修改密码_changePwd
 + 接口编号：
@@ -133,7 +127,11 @@ This is an intersting time management software
   + 修改成功：0
   + 失败，账号不存在：2
   + 失败，存在多个账号：3
-#### 修改主角色
+#### 修改主角色_changeRole
++ 接口编号：
++ 参数:用户账号useracnt，角色编号rid
++ 功能：修改用户的主角色，检验该角色是否拥有
++ 返回值:
 #### 修改头像
 + 接口编号：
 + 参数：用户账号_userAcnt，新头像_newHpic
@@ -143,6 +141,30 @@ This is an intersting time management software
   + 失败，账号不存在：2
   + 失败，存在多个账号：3
 
+#### 获得角色—getRole
++ 接口编号：
++ 参数：用户id-uid，获得角色id-rid
++ 功能：将uid与rid写入user-role表
++ 返回值：成功返回True，失败返回False
+
+#### 查询用户角色-usersRole
++ 接口编号：
++ 参数：用户id-uid
++ 功能：查找User-Role表，获取用户所拥有的角色的编号
++ 返回值：返回用户拥有的角色编号列表
+
+#### 活动结算-actStatus
++ 接口编号
++ 参数：活动id-aid，状态码-statuCode
++ 功能：接受状态码（-1-未完成 1-完成）修改activity表中aid对应活动的状态.若活动成功完成则发放金币
++ 返回值：修改成功返回True，失败返回False
+
+#### 账号信息查询-getUserInfo
++ 接口编号：
++ 参数：userid
++ 功能：返回id对应账户的信息（昵称、头像、金币数量、主角色）
++ 返回值：包含账户信息的字典
+
 ### 次级接口
 #### 账号存在性检_ifAcntExist
 + 参数：用户账号_userAcnt
@@ -150,6 +172,22 @@ This is an intersting time management software
 + 返回值：若不存在返回0，若仅存在一个账号则返回匹配账号对象，若存在多个账号则返回匹配账号的数量
 
 #### 修改金币数量（增/减）_changeCoin
-+ 参数：用户账号_userAcnt，操作码_code(0-减少，1增加)，数量_num
++ 参数：用户id_userid，操作码_code(0-减少，1增加)，数量_num
 + 功能：修改用户金币数
 + 返回值：False修改失败，True修改成功
+
+#### 计算初始收益_calprofit
++ 参数：活动类型_actType，活动信息_actInfo
++ 功能：根据活动类型与信息，计算初始收益profit
++ 返回值：计算的结果，整型
+
+#### 创建用户-活动表项_crtU_A
++ 参数：用户id_uid，活动id_aid，活动开始时间_startT
++ 功能：activity_user表项创建，初始创建时活动状态为0代表进行中，1代表成功，2代表失败
++ 返回值：无
+
+#### 根据用户账号查询用户id_acnt_to_id
++ 参数：用户账号acnt
++ 功能：根据用户账号查询用户id
++ 返回值：若存在返回用户id，否则返回-1
+
