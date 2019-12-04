@@ -105,10 +105,10 @@ This is an intersting time management software
   + 账号创建失败：0
 
 
-#### 创建活动（单人）_crtAct
+#### 创建活动_crtAct
 + 接口编号：
-+ 参数：用户账号_userAcnt，活动类型actType，活动信息_actInfo，开始时间_startT
-+ 功能：创建活动信息，写入activity表
++ 参数：用户账号列表_userAcnts，活动类型actType，活动信息_actInfo，开始时间_startT
++ 功能：创建活动信息，写入activity表，同时根据用户列表创建U-A表项
 
 #### 修改密码_changePwd
 + 接口编号：
@@ -164,6 +164,12 @@ This is an intersting time management software
 + 参数：userid
 + 功能：返回id对应账户的信息（昵称、头像、金币数量、主角色）
 + 返回值：包含账户信息的字典
+
+#### 活动状态查询-getActStatu
++ 接口编号：
++ 参数：活动id-aid
++ 功能：查询指定id活动的进行状态
++ 返回值：返回活动的状态
 
 ### 次级接口
 #### 账号存在性检_ifAcntExist

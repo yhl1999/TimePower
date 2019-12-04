@@ -24,7 +24,7 @@ class User(Base):
         self.coin = coin
         self.role = role
 
-
+        
 class Role(Base):
     __table__ = Table('role',metadata,autoload = True)
 
@@ -150,7 +150,7 @@ def changeNickname(userAcnt,newName):
         return 0
 
 #创建活动 未测试
-def crtAct(userAcnt,actType,actInfo,startT):
+def crtAct(userAcnts,actType,actInfo,startT):
     _type = actType
     info = actInfo
     status = 0
@@ -161,10 +161,12 @@ def crtAct(userAcnt,actType,actInfo,startT):
     session.begin()
     session.add(newact)
     session.commit()
+
     #创建activity—user表项
-    aid = newact.id
-    uid = acnt_to_id(userAcnt)
-    crtU_A(uid,aid,startT)
+    for userAcnt in userAcnts:
+        aid = newact.id
+        uid = acnt_to_id(userAcnt)
+        crtU_A(uid,aid,startT)
 
 
 #初始收益计算 未测试
@@ -238,3 +240,8 @@ def actStatus(aid,statuCode):
 def getUserInfo(userid):
     e = session.query(User).filter(User.id == userid)
     return {"username":e.username,"headpic":e.headpic,"coin":e.coin,"role":e.role}
+
+#活动状态查询 未测试
+def getActStatu(aid):
+    e = session.query(Activity).filter(Activity.id == aid).one()
+    return e.status
