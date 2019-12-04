@@ -1,18 +1,26 @@
 package com.o1.timemanager
 
 import android.content.res.Resources
-import android.graphics.Rect
 import android.os.Bundle
-import android.os.Handler
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
-import kotlinx.android.synthetic.main.activity_main.*
-import kotlinx.android.synthetic.main.lottery.*
+import kotlinx.android.synthetic.main.backpack.*
 
 class MainActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.backpack)
+
+        plaids.setOnItemClickListener {
+            ic_item.setImageResource(
+                resources.getIdentifier(
+                    "ic_item_${it}_1",
+                    "drawable",
+                    packageName
+                )
+            )
+        }
 
 //        lottery.setOnClickListener {
 //            lottery.setBackgroundResource(R.drawable.background_lotteried)
@@ -33,7 +41,7 @@ class MainActivity : AppCompatActivity() {
 //        val handler = Handler()
 //        val runnable = object : Runnable {
 //            override fun run() {
-//                resNum = resNum % 3 + 1
+//                resNum = resNum % 2 + 1
 //                ic_item.setImageResource(
 //                    resources.getIdentifier(
 //                        "ic_item_2_$resNum",
@@ -50,6 +58,7 @@ class MainActivity : AppCompatActivity() {
 //            ic_item.clipBounds = Rect(0,0,104.px,112.px)
 //        }
     }
+
     val Int.dp: Int
         get() = (this / Resources.getSystem().displayMetrics.density).toInt()
     val Int.px: Int

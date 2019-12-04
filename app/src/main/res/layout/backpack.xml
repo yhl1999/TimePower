@@ -28,8 +28,10 @@
                 android:contentDescription="anim_item" />
 
             <com.o1.timemanager.PlaidsContainer
+                android:id="@+id/plaids"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                app:plaidSize="@dimen/plaid_size"
                 android:layout_margin="@dimen/margin_avatar"
                 android:padding="@dimen/plaid_radius" />
         </LinearLayout>

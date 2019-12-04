@@ -6,29 +6,43 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.Paint
 import android.util.AttributeSet
+import android.view.GestureDetector
+import android.view.MotionEvent
 import android.view.View
+import android.view.accessibility.AccessibilityNodeInfo
+import java.lang.Exception
 import kotlin.math.ceil
 import kotlin.math.floor
 
 class PlaidsContainer(context: Context, attrs: AttributeSet) : View(context, attrs) {
+    private val array = context.obtainStyledAttributes(attrs, R.styleable.PlaidsContainer)
     private var left: Float = 0f
-    private var plaidSize: Float = resources.getDimension(R.dimen.plaid_size)
+    private var plaidSize: Float =
+        array.getDimension(R.styleable.PlaidsContainer_plaidSize, 80.px.toFloat())
     private var marginAvatar: Float = resources.getDimension(R.dimen.margin_avatar)
     private var columnNum: Int = 0
     private var blankNum: Int = 50
     private val itemPadding: Int = 10.px
-    private val radius: Float = resources.getDimension(R.dimen.plaid_radius)
-    private val items = listOf(2, 3, 4)
+    private val plaidRadius: Float = resources.getDimension(R.dimen.plaid_radius)
+    private var items = listOf(2, 3, 4, 2, 3, 4, 2, 3, 4)
+        set(value) {
+            field = value
+        }
+    private var onItemClickListener: ((it: Int) -> Unit)? = null
+
+    init {
+        isClickable = true
+    }
 
     private val borderPen = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = Color.BLACK
         style = Paint.Style.STROKE
-        strokeWidth = radius
+        strokeWidth = plaidRadius
     }
     private val fillPen = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         color = 0x55000000
         style = Paint.Style.FILL
-        strokeWidth = radius
+        strokeWidth = plaidRadius
     }
 
     override fun onDraw(canvas: Canvas) {
@@ -39,28 +53,30 @@ class PlaidsContainer(context: Context, attrs: AttributeSet) : View(context, att
             for (i in 1..blankNum) {
                 drawRoundRect(
                     l, t, l + plaidSize, plaidSize + t,
-                    radius, radius, fillPen
+                    plaidRadius, plaidRadius, fillPen
                 )
                 drawRoundRect(
                     l, t, l + plaidSize, plaidSize + t,
-                    radius, radius, borderPen
+                    plaidRadius, plaidRadius, borderPen
                 )
                 if (i <= items.size) {
-                    resources.getDrawable(
-                        resources.getIdentifier(
-                            "ic_item_${items[i-1]}_1",
-                            "drawable",
-                            context.packageName
-                        ), null
-                    ).apply {
-                        println("$width - $height")
-                        setBounds(
-                            l.toInt() + itemPadding,
-                            t.toInt() + itemPadding,
-                            (l + plaidSize).toInt() - itemPadding,
-                            (plaidSize + t).toInt() - itemPadding
-                        )
-                        draw(canvas)
+                    try {
+                        resources.getDrawable(
+                            resources.getIdentifier(
+                                "ic_item_${items[i - 1]}_1",
+                                "drawable",
+                                context.packageName
+                            ), null
+                        ).apply {
+                            setBounds(
+                                l.toInt() + itemPadding,
+                                t.toInt() + itemPadding,
+                                (l + plaidSize).toInt() - itemPadding,
+                                (plaidSize + t).toInt() - itemPadding
+                            )
+                            draw(canvas)
+                        }
+                    } catch (ignore: Exception) {
                     }
                 }
                 l += plaidSize
@@ -86,14 +102,39 @@ class PlaidsContainer(context: Context, attrs: AttributeSet) : View(context, att
         setMeasuredDimension(
             widthMeasureSpec,
             MeasureSpec.makeMeasureSpec(
-                plaidSize.toInt() * ceil(blankNum.toFloat() / columnNum).toInt() + radius.toInt() + paddingTop + paddingBottom,
+                plaidSize.toInt() * ceil(blankNum.toFloat() / columnNum).toInt() + plaidRadius.toInt() + paddingTop + paddingBottom,
                 MeasureSpec.EXACTLY
             )
         )
     }
 
-    override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
-        super.onSizeChanged(w, h, oldw, oldh)
+    private val detector: GestureDetector = GestureDetector(context,
+        object : GestureDetector.SimpleOnGestureListener() {
+            override fun onSingleTapUp(e: MotionEvent): Boolean {
+                val x = floor((e.y - paddingTop) / plaidSize).toInt()
+                var y = floor((e.x - paddingLeft) / plaidSize).toInt()
+                if (y < 0) y = 0
+                if (y > columnNum - 1) y = columnNum - 1
+                val index = x * columnNum + y
+                if (index < items.size && index >= 0) {
+                    onItemClick(index)
+                }
+                return true
+            }
+        }
+    )
+
+    override fun onTouchEvent(event: MotionEvent): Boolean {
+        detector.onTouchEvent(event)
+        return super.onTouchEvent(event)
+    }
+
+    fun setOnItemClickListener(listener: (item: Int) -> Unit) {
+        onItemClickListener = listener
+    }
+
+    fun onItemClick(index: Int) {
+        onItemClickListener?.let { it(items[index]) }
     }
 
     val Int.dp: Int
