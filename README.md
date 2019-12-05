@@ -94,6 +94,7 @@ This is an intersting time management software
 ### 服务器接口
 #### 请求检验、返回数据
 + 访问接口:http://121.36.56.36:5000
++ 功能：所有请求的中继
 + 参数：接口编号-apicode，对应接口的参数以json格式发送，具体参数见接口参数说明
 
 #### 添加用户-addUser 
@@ -172,7 +173,7 @@ This is an intersting time management software
 + 接口编号：10
 + 参数：用户账号userAcnt
 + 功能：返回对应账户的信息（昵称、头像、金币数量、主角色）
-+ 返回值：包含账户信息的字典，内容包括昵称-username,头像-headpic，金币数量-coin，主角色-role
++ 返回值：包含账户信息的字典userDir，内容包括昵称-username,头像-headpic，金币数量-coin，主角色-role
 
 #### 活动状态查询-getActStatu
 + 接口编号：11
