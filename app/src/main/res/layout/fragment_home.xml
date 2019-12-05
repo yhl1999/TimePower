@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@color/background"
+    tools:context=".MainActivity">
+
+    <com.o1.timemanager.Circle
+        android:id="@+id/circle"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:padding="60dp"
+        app:fontSize="60sp"
+        app:lineWidth="10dp"
+        app:circleTextMargin="30dp"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/ic_item"
+        android:layout_width="104dp"
+        android:layout_height="112dp"
+        android:contentDescription="anim_item"
+        app:layout_constraintTop_toTopOf="@id/circle"
+        app:layout_constraintBottom_toBottomOf="@id/circle"
+        app:layout_constraintLeft_toLeftOf="@id/circle"
+        app:layout_constraintRight_toRightOf="@id/circle" />
+    <TextView
+        android:id="@+id/coin_value"
+        android:layout_width="wrap_content"
+        android:layout_height="@dimen/coin_field_height"
+        android:layout_margin="30dp"
+        android:background="@drawable/background_coin"
+        android:text="100000000"
+        android:textColor="@android:color/white"
+        android:textSize="@dimen/coin_size"
+        android:gravity="center"
+        android:textAlignment="center"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <ImageView
+        android:id="@+id/coin_icon"
+        android:layout_width="@dimen/coin_field_height"
+        android:layout_height="@dimen/coin_field_height"
+        android:contentDescription="coin_icon"
+        app:layout_constraintLeft_toLeftOf="@id/coin_value"
+        app:layout_constraintTop_toTopOf="@id/coin_value"
+        app:srcCompat="@drawable/ic_coin" />
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/change"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="开始"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#64CCA9"
+        app:cornerRadius="10dp"
+        android:shadowColor="#337F63"
+        style="@style/Widget.MaterialComponents.Button"
+        app:layout_constraintBottom_toTopOf="@id/team"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/team"
+        android:layout_width="120dp"
+        android:layout_height="60dp"
+        android:text="组队"
+        android:layout_marginBottom="10dp"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:cornerRadius="10dp"
+        android:shadowColor="#337F63"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+</androidx.constraintlayout.widget.ConstraintLayout>
