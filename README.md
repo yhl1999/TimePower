@@ -93,83 +93,96 @@ This is an intersting time management software
 ![databasedesign](./pic/datadesign.png)
 ### 服务器接口
 #### 请求检验、返回数据
-    
-    筛选客户端的合法请求并分发给后端，像客户端返回后端处理的结果。需要检验数据的合法性
-#### 添加用户_addUser 
-+ 接口编号： 
-+ 参数：新用户的账号_newAcnt，新用户的密码_newPwd
++ 访问接口:http://121.36.56.36:5000
++ 功能：所有请求的中继
++ 参数：接口编号-apicode，对应接口的参数以json格式发送，具体参数见接口参数说明
+
+#### 添加用户-addUser 
++ 接口编号：1
++ 参数：新用户的账号-newAcnt，新用户的密码-newPwd
 + 功能：判断用户账号是否存在，若存在返回失败信息，若不存在则将用户的账号密码、注册时间...写入user表，若成功则返回成功状态
-+ 返回值：
++ 返回值：创建状态-statu
   + 账号已存在：-1
   + 账号创建成功：1
   + 账号创建失败：0
 
 
-#### 创建活动_crtAct
-+ 接口编号：
-+ 参数：用户账号列表_userAcnts，活动类型actType，活动信息_actInfo，开始时间_startT
+#### 创建活动-crtAct
++ 接口编号：2
++ 参数：用户账号列表-userAcnts，活动类型-actType，活动信息-actInfo，开始时间-startT
 + 功能：创建活动信息，写入activity表，同时根据用户列表创建U-A表项
-
-#### 修改密码_changePwd
-+ 接口编号：
-+ 参数：用户账号_userAcnt，原密码_oldPwd，新密码_newPwd
++ 返回值：状态码statu
+  + 成功返回True
+  + 失败返回False
+  
+#### 获得角色—getRole
++ 接口编号：3
++ 参数：用户id-uid，获得角色id-rid
++ 功能：将uid与rid写入user-role表
++ 返回值：状态码statu
+  + 成功返回True
+  + 失败返回False
+#### 修改密码-changePwd
++ 接口编号：4
++ 参数：用户账号-userAcnt，原密码-oldPwd，新密码-newPwd
 + 功能：修改用户密码
-+ 返回值：
++ 返回值：状态码statu
   + 修改成功：0
   + 失败，原密码错误：1
   + 失败，账号不存在：2
   + 失败，存在多个账号：3
-#### 修改昵称
-+ 接口编号：
-+ 参数：用户账号_userAcnt，新头像_newName
+#### 修改昵称-changeNickname
++ 接口编号：5
++ 参数：用户账号-userAcnt，新头像-newName
 + 功能：修改用户昵称
-+ 返回值：
++ 返回值：状态码statu
   + 修改成功：0
   + 失败，账号不存在：2
   + 失败，存在多个账号：3
-#### 修改主角色_changeRole
-+ 接口编号：
-+ 参数:用户账号useracnt，角色编号rid
+#### 修改主角色-changeRole
++ 接口编号：6
++ 参数:用户账号-userAcnt，角色编号-rid
 + 功能：修改用户的主角色，检验该角色是否拥有
-+ 返回值:
-#### 修改头像
-+ 接口编号：
-+ 参数：用户账号_userAcnt，新头像_newHpic
++ 返回值:状态码statu
+  + 修改成功True
+  + 修改失败False
+#### 修改头像-changeHpic
++ 接口编号：7
++ 参数：用户账号-userAcnt，新头像-newHpic
 + 功能：修改用户头像
-+ 返回值：
++ 返回值：状态码statu
   + 修改成功：0
   + 失败，账号不存在：2
   + 失败，存在多个账号：3
-
-#### 获得角色—getRole
-+ 接口编号：
-+ 参数：用户id-uid，获得角色id-rid
-+ 功能：将uid与rid写入user-role表
-+ 返回值：成功返回True，失败返回False
-
-#### 查询用户角色-usersRole
-+ 接口编号：
-+ 参数：用户id-uid
-+ 功能：查找User-Role表，获取用户所拥有的角色的编号
-+ 返回值：返回用户拥有的角色编号列表
 
 #### 活动结算-actStatus
-+ 接口编号
++ 接口编号：8
 + 参数：活动id-aid，状态码-statuCode
 + 功能：接受状态码（-1-未完成 1-完成）修改activity表中aid对应活动的状态.若活动成功完成则发放金币
-+ 返回值：修改成功返回True，失败返回False
++ 返回值：状态码statu
+  + 成功返回结算后获得金币的数量
+  + 失败返回-1
 
-#### 账号信息查询-getUserInfo
-+ 接口编号：
-+ 参数：userid
-+ 功能：返回id对应账户的信息（昵称、头像、金币数量、主角色）
-+ 返回值：包含账户信息的字典
+#### 查询用户角色-usersRole
++ 接口编号：9
++ 参数：用户id-uid
++ 功能：查找User-Role表，获取用户所拥有的角色的编号
++ 返回值：返回用户拥有的角色编号列表roleList
+
+#### 查询账号信息-getUserInfo
++ 接口编号：10
++ 参数：用户账号userAcnt
++ 功能：返回对应账户的信息（昵称、头像、金币数量、主角色）
++ 返回值：包含账户信息的字典userDir，内容包括昵称-username,头像-headpic，金币数量-coin，主角色-role
 
 #### 活动状态查询-getActStatu
-+ 接口编号：
++ 接口编号：11
 + 参数：活动id-aid
 + 功能：查询指定id活动的进行状态
-+ 返回值：返回活动的状态
++ 返回值：状态码statu
+  + 进行中返回0
+  + 失败返回-1
+  + 成功返回1
 
 ### 次级接口
 #### 账号存在性检_ifAcntExist

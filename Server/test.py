@@ -1,5 +1,5 @@
 import api
-
+import requests
 session = api.session
 User = api.User
 
@@ -62,6 +62,13 @@ def tst_changePwd():
     User.changePwd(act,pwd,npwd)
     rest = session.query(User).all()
     show(rest)
-tst_addUser()
+#tst_addUser()
 #tst_changeCoin()
 #tst_changePwd()
+
+def test():
+    d = {'apicode':1,'newAcnt':"testnohub",'newPwd':"abc"}
+    r = requests.post("http://121.36.56.36:5000",json = d)
+    print(r.text)
+
+test()
