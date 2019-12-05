@@ -85,7 +85,7 @@ def addUser(newAcnt,newPwd):
             return 0 #账号创建失败
 #修改金币数 未测试
 def changeCoin(user_id,code,num):
-    e = session.query(User).filter(User.id == user_id)
+    e = session.query(User).filter(User.id == user_id).first()
     if code == 1:
         e.coin +=num
     elif code == 0:
@@ -156,18 +156,20 @@ def crtAct(userAcnts,actType,actInfo,startT):
     status = 0
     profit = calprofit(actType,actInfo)
     buff = 1
+    aid = -1
     #创建Activity表项
     newact = Activity(_type,info,status,profit,buff)
     session.begin()
     session.add(newact)
     session.commit()
-
+    aid = newact.id
     #创建activity—user表项
+    if aid == -1:
+        return False
     for userAcnt in userAcnts:
-        aid = newact.id
         uid = acnt_to_id(userAcnt)
         crtU_A(uid,aid,startT)
-
+    return True
 
 #初始收益计算 未测试
 def calprofit(actType,actInfo):
@@ -187,7 +189,7 @@ def crtU_A(uid,aid,startT):
 
 #账号查询id 未测试
 def acnt_to_id(acnt):
-    e = User.ifAcntExist(acnt)
+    e = ifAcntExist(acnt)
     if isinstance(e,int):
         return -1
     else:
@@ -199,7 +201,10 @@ def getRole(uid,rid):
     newrole = User_Role(uid,rid,getT)
     session.begin()
     session.add(newrole)
-    session.commit()
+    if session.commit() == None:
+        return True
+    else :
+        return False
 
 #查询用户角色 未测试
 def usersRole(uid):
@@ -225,7 +230,7 @@ def changeRole(userAcnt,rid):
     
 #活动结算 未测试
 def actStatus(aid,statuCode):
-    act = session.query(Activity).filter(Activity.id == aid)
+    act = session.query(Activity).filter(Activity.id == aid).first()
     if(act.status == 0):
         act.status = statuCode
         if statuCode == 1:
@@ -237,13 +242,14 @@ def actStatus(aid,statuCode):
     else :
         return -1
 
-#查询账号信息 未测试
+#查询账号信息 已测试
 def getUserInfo(userAcnt):
     userid = acnt_to_id(userAcnt)
-    e = session.query(User).filter(User.id == userid)
+    e = session.query(User).filter(User.id == userid).first()
+    print(e)
     return {"username":e.username,"headpic":e.headpic,"coin":e.coin,"role":e.role}
 
 #活动状态查询 未测试
 def getActStatu(aid):
-    e = session.query(Activity).filter(Activity.id == aid).one()
+    e = session.query(Activity).filter(Activity.id == aid).first()
     return e.status
