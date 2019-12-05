@@ -1,5 +1,7 @@
 package com.o1.timemanager.ui.home
 
+import android.content.Context
+import android.content.SharedPreferences
 import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
@@ -16,6 +18,7 @@ import com.o1.timemanager.R
 
 class HomeFragment : Fragment() {
     private var homeViewModel: HomeViewModel? = null
+
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
