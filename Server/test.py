@@ -66,14 +66,83 @@ def tst_changePwd():
 #tst_changeCoin()
 #tst_changePwd()
 
-def test1():
+localhost = "http://localhost:5000/"
+cloud = "http://121.36.56.36:5000/"
+def test1(url):
     d = {'apicode':1,'newAcnt':"testnohub2",'newPwd':"abc"}
-    r = requests.post("http://121.36.56.36:5000/",json = d)
+    r = requests.post(url,json = d)
     print(r.text)
-
-def test2():
-    d = {'apicode':10,'userAcnt':"testnohub2"}
-    r = requests.post("http://121.36.56.36:5000/",json = d)
+#单人创建
+def test2_1(url):
+    d = {'apicode':2,'userAcnts':["testaccount1"],"actType":1,'actInfo':""}
+    r = requests.post(url,json = d)
     print(r)
     print(r.text)
-test2()
+#组队创建
+def test2_2(url):
+    d = {'apicode':2,'userAcnts':["testaccount2","testaccount3"],"actType":1,'actInfo':""}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test3(url):
+    d = {'apicode':3,'userAcnt':'testaccount2','userPwd':'newPwd'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test4(url):
+    d = {'apicode':4,'userAcnt':'testaccount2','oldPwd':'abc','newPwd':'newPwd'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test5(url):
+    d = {'apicode':5,'userAcnt':'testaccount2','newName':'changeNickname'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test6(url):
+    d = {'apicode':6,'userAcnt':'testaccount2','rid':1}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test7(url):
+    d = {'apicode':7,'userAcnt':'testaccount2','newHpic':"/pic"}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test8(url):
+    d = {'apicode':8,'aid':1,'statuCode':-1}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test9(url):
+    d = {'apicode':9,'userAcnt':'testaccount2'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test10(url):
+    d = {'apicode':10,'userAcnt':"testnohub2"}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test11(url):
+    d = {'apicode':11,'aid':1}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test12(url):
+    d = {'apicode':12,'userAcnt':'testaccount2'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)  
+
+test3(cloud)
