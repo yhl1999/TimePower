@@ -16,6 +16,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.JsonObject
+import com.o1.timemanager.ui.lottery.LotteryFragment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -31,13 +32,14 @@ class MainActivity : AppCompatActivity() {
     var userAcnt: String? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+        setContentView(R.layout.activity_main)
+
         sp = getSharedPreferences("info", Context.MODE_PRIVATE)
         isLogin = sp.getBoolean("isLogin", false)
         username = sp.getString("username", "Time Power")
         userAcnt = sp.getString("userAcnt", "Time Power")
 
-        super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
         // Passing each menu ID as a set of Ids because each

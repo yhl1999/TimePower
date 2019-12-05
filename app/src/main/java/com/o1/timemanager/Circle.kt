@@ -61,7 +61,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     var timerStarted: Boolean = false
     var minutes: Int = 0
-    private var seconds: Int = 0
+    var seconds: Int = 0
 
     private lateinit var countdownTimer: CountDownTimer
 
