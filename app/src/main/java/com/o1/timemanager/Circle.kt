@@ -154,7 +154,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
         detector.onTouchEvent(event)
         when (event.action) {
             MotionEvent.ACTION_DOWN -> {
-                touchPoint = distance(pointCenterX, pointCenterY, event.x, event.y) < pointSize
+                touchPoint = distance(pointCenterX, pointCenterY, event.x, event.y) < pointSize + 10f.px
             }
             else -> {
             }
