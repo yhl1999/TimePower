@@ -58,7 +58,8 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                     SharedPreferences sp = getSharedPreferences("info", MODE_PRIVATE);
                     SharedPreferences.Editor edit = sp.edit();
                     edit.putBoolean("isLogin", true);
-                    edit.putInt("uid", 1);
+                    edit.putString("userAcnt", "ningyuv");
+                    edit.putString("username", "ningyuv");
                     edit.apply();
                     finish();
                 }

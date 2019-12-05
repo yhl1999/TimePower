@@ -24,10 +24,7 @@ class PlaidsContainer(context: Context, attrs: AttributeSet) : View(context, att
     private var blankNum: Int = 50
     private val itemPadding: Int = 10.px
     private val plaidRadius: Float = resources.getDimension(R.dimen.plaid_radius)
-    private var items = listOf(2, 3, 4, 2, 3, 4, 2, 3, 4)
-        set(value) {
-            field = value
-        }
+    var items = mutableListOf(1, 2, 3)
     private var onItemClickListener: ((it: Int) -> Unit)? = null
 
     init {

@@ -14,7 +14,7 @@ class BackpackPlaid(context: Context, attrs: AttributeSet) : ImageView(context, 
     private lateinit var oval: RectF
 
     init {
-        setImageResource(R.drawable.ic_item_2_1)
+        setImageResource(R.drawable.ic_item_1_1)
         setBackgroundResource(R.drawable.background_plaid)
     }
 
