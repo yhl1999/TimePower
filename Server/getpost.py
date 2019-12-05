@@ -28,11 +28,13 @@ def home():
     elif request.json['apicode'] == 8:
         res["statu"] = api.actStatus(r["aid"],r["statuCode"])
     elif request.json['apicode'] == 9:
-        res["roleList"] = api.usersRole(r["uid"])
+        res["roleList"] = api.usersRole(r["userAcnt"])
     elif request.json['apicode'] == 10:
         res = api.getUserInfo(r["userAcnt"])
     elif request.json['apicode'] == 11:
         res["statu"] = api.getActStatu(r["aid"])
+    elif request.json['apicode'] == 12:
+        res["actList"] = api.getActStatu(r["userAcnt"])
     else:
         #调用了错误的接口号
         res["error"] = 1

@@ -165,7 +165,7 @@ This is an intersting time management software
 
 #### 查询用户角色-usersRole
 + 接口编号：9
-+ 参数：用户id-uid
++ 参数：用户账号-userAcnt
 + 功能：查找User-Role表，获取用户所拥有的角色的编号
 + 返回值：返回用户拥有的角色编号列表roleList
 
@@ -183,6 +183,12 @@ This is an intersting time management software
   + 进行中返回0
   + 失败返回-1
   + 成功返回1
+
+#### 用户历史活动查询-getActHistory
++ 接口编号：12
++ 参数：用户账号userAcnt
++ 功能：根据用户账号查询用户的历史活动，返回该用户所有活动的起始时间、活动信息、收益
++ 返回值：包含所有活动信息的列表-actList，列表中的每一项是一个包含起始时间startT，活动信息actInfo，收益profit的字典
 
 ### 次级接口
 #### 账号存在性检_ifAcntExist
