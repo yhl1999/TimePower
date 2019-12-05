@@ -66,9 +66,14 @@ def tst_changePwd():
 #tst_changeCoin()
 #tst_changePwd()
 
-def test():
-    d = {'apicode':1,'newAcnt':"testnohub",'newPwd':"abc"}
-    r = requests.post("http://121.36.56.36:5000",json = d)
+def test1():
+    d = {'apicode':1,'newAcnt':"testnohub2",'newPwd':"abc"}
+    r = requests.post("http://121.36.56.36:5000/",json = d)
     print(r.text)
 
-test()
+def test2():
+    d = {'apicode':10,'userAcnt':"testnohub2"}
+    r = requests.post("http://121.36.56.36:5000/",json = d)
+    print(r)
+    print(r.text)
+test2()
