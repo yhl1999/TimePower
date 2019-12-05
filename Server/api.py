@@ -194,7 +194,8 @@ def acnt_to_id(acnt):
         return e.id
 
 #获得角色 未测试
-def getRole(uid,rid,getT):
+def getRole(uid,rid):
+    getT = datetime.date.now()
     newrole = User_Role(uid,rid,getT)
     session.begin()
     session.add(newrole)
@@ -232,12 +233,13 @@ def actStatus(aid,statuCode):
             pfit = int(act.profit * act.buff)
             for userid in userlist:
                 changeCoin(userid,1,pfit)
-        return True
+        return pfit
     else :
-        return False
+        return -1
 
 #查询账号信息 未测试
-def getUserInfo(userid):
+def getUserInfo(userAcnt):
+    userid = acnt_to_id(userAcnt)
     e = session.query(User).filter(User.id == userid)
     return {"username":e.username,"headpic":e.headpic,"coin":e.coin,"role":e.role}
 
