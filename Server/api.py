@@ -24,35 +24,34 @@ class User(Base):
         self.coin = coin
         self.role = role
 
-        
 class Role(Base):
     __table__ = Table('role',metadata,autoload = True)
 
 class Activity(Base):
     __table__ = Table('activity',metadata,autoload = True)
 
-    def __init__(self,_type,info,status,profit,buff):
+    def __init__(self,_type,info,status,profit,buff,startdate):
         self.type = _type
         self.info = info
         self.status = status
         self.profit = profit
         self.buff = buff
+        self.startdate = startdate
 
 class Act_User(Base):
     __table__ = Table('activity_user',metadata,autoload = True)
 
-    def __init__(self,user_id,activity_id,start_time):
+    def __init__(self,user_id,activity_id):
         self.user_id = user_id
         self.activity_id = activity_id
-        self.start_time = start_time
 
 class User_Role(Base):
     __table__ = Table('user_role',metadata,autoload = True)
 
-    def __init__(self,user_id,role_id,get_time):
+    def __init__(self,user_id,role_id,getdate):
         self.user_id = user_id
         self.role_id = role_id
-        self.get_time = get_time
+        self.getdate = getdate
     
 #账号存在性检验
 def ifAcntExist(userAcnt):
@@ -150,15 +149,16 @@ def changeNickname(userAcnt,newName):
         return 0
 
 #创建活动 未测试
-def crtAct(userAcnts,actType,actInfo,startT):
+def crtAct(userAcnts,actType,actInfo):
     _type = actType
     info = actInfo
     status = 0
     profit = calprofit(actType,actInfo)
     buff = 1
     aid = -1
+    startT = datetime.datetime.now()
     #创建Activity表项
-    newact = Activity(_type,info,status,profit,buff)
+    newact = Activity(_type,info,status,profit,buff,startT)
     session.begin()
     session.add(newact)
     session.commit()
@@ -181,8 +181,7 @@ def calprofit(actType,actInfo):
 def crtU_A(uid,aid,startT):
     user_id = uid
     activity_id = aid
-    start_time = startT
-    newUA = Act_User(user_id,activity_id,start_time)
+    newUA = Act_User(user_id,activity_id)
     session.begin()
     session.add(newUA)
     session.commit()
@@ -197,8 +196,8 @@ def acnt_to_id(acnt):
 
 #获得角色 未测试
 def getRole(uid,rid):
-    getT = datetime.date.now()
-    newrole = User_Role(uid,rid,getT)
+    getdate = datetime.date.now()
+    newrole = User_Role(uid,rid,getdate)
     session.begin()
     session.add(newrole)
     if session.commit() == None:
@@ -207,7 +206,8 @@ def getRole(uid,rid):
         return False
 
 #查询用户角色 未测试
-def usersRole(uid):
+def usersRole(userAcnt):
+    uid = acnt_to_id(userAcnt)
     res = session.query(User_Role.role_id).filter(User_Role.user_id == uid).all()
     return res    
 
@@ -253,3 +253,15 @@ def getUserInfo(userAcnt):
 def getActStatu(aid):
     e = session.query(Activity).filter(Activity.id == aid).first()
     return e.status
+
+
+#用户历史活动查询 未测试
+def getActHistory(userAcnt):
+    uid = acnt_to_id(userAcnt)
+    aidlist = session.query(Act_User.activity_id).filter(Act_User.user_id ==uid).all()
+    actList = []
+    for i in aidlist:
+        act = session.query(Activity).filter(Activity.id == i).first()
+        if act.status!= 0 :
+            actList.append({'startT':act.startdate,'actInfo':act.actInfo,'profit':act.profit*act.buff})
+    return actList
