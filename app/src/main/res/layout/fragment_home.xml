@@ -37,7 +37,6 @@
         android:text="100000000"
         android:textColor="@android:color/white"
         android:textSize="@dimen/coin_size"
-        app:fontFamily="@font/lato_light"
         android:gravity="center"
         android:textAlignment="center"
         app:layout_constraintRight_toRightOf="parent"

@@ -12,6 +12,16 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.gson.JsonObject;
+
+import org.jetbrains.annotations.NotNull;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
+import retrofit2.Retrofit;
+import retrofit2.converter.gson.GsonConverterFactory;
+
 public class RegisterActivity extends AppCompatActivity implements View.OnClickListener {
 
     private EditText usernameText;
@@ -50,22 +60,48 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 } else {
                     //显示欢迎界面
                     AlertDialog.Builder dialog = new AlertDialog.Builder(RegisterActivity.this);
-                    dialog.setTitle("注册成功");
-                    dialog.setMessage("用户名" + username + " 密码" + password);
-                    dialog.setPositiveButton("现在登录", new DialogInterface.OnClickListener() {
+                    Retrofit retrofit = new Retrofit.Builder()
+                            .baseUrl("http://121.36.56.36:5000/")
+                            .addConverterFactory(GsonConverterFactory.create())
+                            .build();
+                    Api api = retrofit.create(Api.class);
+                    JsonObject body = new JsonObject();
+                    body.addProperty("apicode", 1);
+                    body.addProperty("newAcnt", "ningyuv"/* username */);
+                    body.addProperty("newPwd", "ningyu"/* password */);
+                    api.post(body).enqueue(new Callback<JsonObject>() {
                         @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            Intent inter = new Intent(RegisterActivity.this, LoginActivity.class);
-                            startActivity(inter);
+                        public void onResponse(@NotNull Call<JsonObject> call, @NotNull Response<JsonObject> response) {
+                            if (response.body() != null) {
+                                System.out.println(response.body().get("statu").getAsInt());
+                                dialog.setTitle("注册成功");
+                                dialog.setMessage("用户名" + username + " 密码" + password);
+                                dialog.setPositiveButton("现在登录", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        Intent inter = new Intent(RegisterActivity.this, LoginActivity.class);
+                                        startActivity(inter);
+                                        finish();
+                                    }
+                                });
+                                dialog.setNegativeButton("等会登录", new DialogInterface.OnClickListener() {
+                                    @Override
+                                    public void onClick(DialogInterface dialog, int which) {
+                                        dialog.cancel();
+                                    }
+                                });
+                                dialog.show();
+                            }
+                        }
+
+                        @Override
+                        public void onFailure(@NotNull Call<JsonObject> call, @NotNull Throwable t) {
+                            t.printStackTrace();
+                            dialog.setTitle("注册失败");
+                            dialog.setMessage("请联系管理员");
+                            dialog.show();
                         }
                     });
-                    dialog.setNegativeButton("等会登录", new DialogInterface.OnClickListener() {
-                        @Override
-                        public void onClick(DialogInterface dialog, int which) {
-                            dialog.cancel();
-                        }
-                    });
-                    dialog.show();
 
                 }
                 break;

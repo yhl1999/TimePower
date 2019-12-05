@@ -1,5 +1,6 @@
 package com.o1.timemanager.ui.home
 
+import android.graphics.Typeface
 import android.os.Bundle
 import android.os.Handler
 import android.view.LayoutInflater
@@ -7,6 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
 import com.o1.timemanager.Circle
@@ -26,6 +28,9 @@ class HomeFragment : Fragment() {
         val circle: Circle = root.findViewById(R.id.circle)
         val icItem: ImageView = root.findViewById(R.id.ic_item)
         val team: Button = root.findViewById(R.id.team)
+        val coinValue: TextView = root.findViewById(R.id.coin_value)
+
+        coinValue.typeface = Typeface.createFromAsset(context?.assets, "fonts/Lato-Light.ttf")
         change.setOnClickListener {
             if (circle.timerStarted) {
                 change.text = "开始"
