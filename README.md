@@ -93,8 +93,9 @@ This is an intersting time management software
 ![databasedesign](./pic/datadesign.png)
 ### 服务器接口
 #### 请求检验、返回数据
-    
-    筛选客户端的合法请求并分发给后端，像客户端返回后端处理的结果。需要检验数据的合法性
++ 访问接口:http://121.36.56.36:5000
++ 参数：接口编号-apicode，对应接口的参数以json格式发送，具体参数见接口参数说明
+
 #### 添加用户-addUser 
 + 接口编号：1
 + 参数：新用户的账号-newAcnt，新用户的密码-newPwd
@@ -109,7 +110,9 @@ This is an intersting time management software
 + 接口编号：2
 + 参数：用户账号列表-userAcnts，活动类型-actType，活动信息-actInfo，开始时间-startT
 + 功能：创建活动信息，写入activity表，同时根据用户列表创建U-A表项
-+ 返回值：无
++ 返回值：状态码statu
+  + 成功返回True
+  + 失败返回False
   
 #### 获得角色—getRole
 + 接口编号：3
