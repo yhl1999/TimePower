@@ -79,6 +79,7 @@ def addUser(newAcnt,newPwd):
         session.begin()
         session.add(newuser)    
         if session.commit() == None :
+            getRole(newuser.id,1)
             print("账号创建成功")
             return 1 #账号创建成功
         else:
