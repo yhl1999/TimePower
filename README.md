@@ -89,6 +89,8 @@ This is an intersting time management software
 ### 登陆界面
 
 ## 后端
+
+## 服务器
 ### 数据库设计
 ![databasedesign](./pic/datadesign.png)
 ### 服务器接口
@@ -109,19 +111,22 @@ This is an intersting time management software
 
 #### 创建活动-crtAct
 + 接口编号：2
-+ 参数：用户账号列表-userAcnts，活动类型-actType，活动信息-actInfo，开始时间-startT
++ 参数：用户账号列表-userAcnts，活动类型-actType，活动信息-actInfo
 + 功能：创建活动信息，写入activity表，同时根据用户列表创建U-A表项
 + 返回值：状态码statu
   + 成功返回True
   + 失败返回False
-  
-#### 获得角色—getRole
+
+#### 用户登陆-login
 + 接口编号：3
-+ 参数：用户id-uid，获得角色id-rid
-+ 功能：将uid与rid写入user-role表
++ 参数：用户账号-userAcnt，用户密码-userPwd
++ 功能：验证用户账号密码的正确性，返回验证结果
 + 返回值：状态码statu
-  + 成功返回True
-  + 失败返回False
+  + 登陆成功返回1
+  + 密码错误返回0
+  + 账户不存在返回2
+  + 存在多个账户返回3
+
 #### 修改密码-changePwd
 + 接口编号：4
 + 参数：用户账号-userAcnt，原密码-oldPwd，新密码-newPwd
@@ -133,7 +138,7 @@ This is an intersting time management software
   + 失败，存在多个账号：3
 #### 修改昵称-changeNickname
 + 接口编号：5
-+ 参数：用户账号-userAcnt，新头像-newName
++ 参数：用户账号-userAcnt，新昵称-newName
 + 功能：修改用户昵称
 + 返回值：状态码statu
   + 修改成功：0
@@ -160,10 +165,11 @@ This is an intersting time management software
 + 参数：活动id-aid，状态码-statuCode
 + 功能：接受状态码（-1-未完成 1-完成）修改activity表中aid对应活动的状态.若活动成功完成则发放金币
 + 返回值：状态码statu
-  + 成功返回结算后获得金币的数量
-  + 失败返回-1
+  + 结算成功且活动状态为完成时返回发放金币数量
+  + 结算成功且活动状态为失败时返回0
+  + 结算失败返回-1
 
-#### 查询用户角色-usersRole
+#### 查询用户角色-userRoles
 + 接口编号：9
 + 参数：用户账号-userAcnt
 + 功能：查找User-Role表，获取用户所拥有的角色的编号
@@ -207,8 +213,8 @@ This is an intersting time management software
 + 返回值：计算的结果，整型
 
 #### 创建用户-活动表项_crtU_A
-+ 参数：用户id_uid，活动id_aid，活动开始时间_startT
-+ 功能：activity_user表项创建，初始创建时活动状态为0代表进行中，1代表成功，2代表失败
++ 参数：用户id_uid，活动id_aid
++ 功能：activity_user表项创建
 + 返回值：无
 
 #### 根据用户账号查询用户id_acnt_to_id
@@ -216,6 +222,11 @@ This is an intersting time management software
 + 功能：根据用户账号查询用户id
 + 返回值：若存在返回用户id，否则返回-1
 
-
+#### 获得角色—getRole
++ 参数：用户id-uid，获得角色id-rid
++ 功能：将uid与rid写入user-role表
++ 返回值：状态码statu
+  + 成功返回True
+  + 失败返回False
 
 [*_*]:可拓展的功能：宠物系统，开宠物卡池，宠物每天可有一定几率带回道具；增加道具：恶魔的挑战书（使用后24h内，完成一次两小时以上自习可获得额外道具）

@@ -62,6 +62,8 @@ def ifAcntExist(userAcnt):
     else :
         return l
 
+
+
 #创建新用户 测试完毕
 def addUser(newAcnt,newPwd):
     if ifAcntExist(newAcnt) !=0 :
@@ -116,7 +118,7 @@ def changePwd(userAcnt,oldPwd,newPwd):
             print("原密码错误")
             return 1
 
-#修改头像 未测试
+#修改头像 测试完毕
 def changeHpic(userAcnt,newHpic):
     e = ifAcntExist(userAcnt)
     if isinstance(e,int):
@@ -132,7 +134,7 @@ def changeHpic(userAcnt,newHpic):
         session.commit()
         return 0
 
-#修改昵称 未测试
+#修改昵称 测试完毕
 def changeNickname(userAcnt,newName):
     e = ifAcntExist(userAcnt)
     if isinstance(e,int):
@@ -143,12 +145,29 @@ def changeNickname(userAcnt,newName):
             print("账号不存在")
             return 2
     else:
-        e.nickname = newName
+        e.username = newName
         session.begin()
         session.commit()
         return 0
 
-#创建活动 未测试
+#修改主角色 测试完毕
+def changeRole(userAcnt,rid):
+    e = ifAcntExist(userAcnt)
+
+    if (isinstance(e,int)):
+        return False
+    else :
+        rolelist = userRoles(userAcnt)
+        print(rolelist)
+        if rid in rolelist:
+            e.role = rid
+            session.begin()
+            session.commit()
+            return True
+        else:
+            return False
+
+#创建活动 测试完毕
 def crtAct(userAcnts,actType,actInfo):
     _type = actType
     info = actInfo
@@ -168,7 +187,7 @@ def crtAct(userAcnts,actType,actInfo):
         return False
     for userAcnt in userAcnts:
         uid = acnt_to_id(userAcnt)
-        crtU_A(uid,aid,startT)
+        crtU_A(uid,aid)
     return True
 
 #初始收益计算 未测试
@@ -177,8 +196,8 @@ def calprofit(actType,actInfo):
     pass
     return res
 
-#创建用户-活动表项 未测试
-def crtU_A(uid,aid,startT):
+#创建用户-活动表项 测试完毕
+def crtU_A(uid,aid):
     user_id = uid
     activity_id = aid
     newUA = Act_User(user_id,activity_id)
@@ -186,7 +205,7 @@ def crtU_A(uid,aid,startT):
     session.add(newUA)
     session.commit()
 
-#账号查询id 未测试
+#账号查询id 测试完毕
 def acnt_to_id(acnt):
     e = ifAcntExist(acnt)
     if isinstance(e,int):
@@ -205,30 +224,17 @@ def getRole(uid,rid):
     else :
         return False
 
-#查询用户角色 未测试
-def usersRole(userAcnt):
+#查询用户角色 测试完毕
+def userRoles(userAcnt):
     uid = acnt_to_id(userAcnt)
-    res = session.query(User_Role.role_id).filter(User_Role.user_id == uid).all()
+    r = session.query(User_Role.role_id).filter(User_Role.user_id == uid).all()
+    res = []
+    for i in r:
+        res.append(i[0])
     return res    
 
-#修改主角色 未测试
-def changeRole(userAcnt,rid):
-    e = User.ifAcntExist(userAcnt)
-
-    if (isinstance(int,e)):
-        return False
-    else :
-        uid = acnt_to_id(userAcnt)
-        rolelist = usersRole(uid)
-        if rid in rolelist:
-            e.role = rid
-            session.begin()
-            session.commit()
-            return True
-        else:
-            return False
     
-#活动结算 未测试
+#活动结算 测试完毕
 def actStatus(aid,statuCode):
     act = session.query(Activity).filter(Activity.id == aid).first()
     if(act.status == 0):
@@ -237,31 +243,53 @@ def actStatus(aid,statuCode):
             userlist = session.query(Act_User.user_id).filter(Act_User.activity_id == aid).all()
             pfit = int(act.profit * act.buff)
             for userid in userlist:
-                changeCoin(userid,1,pfit)
-        return pfit
+                changeCoin(userid[0],1,pfit)
+            return pfit
+        elif statuCode == -1:
+            return 0
+        else :
+            return -1
     else :
         return -1
 
-#查询账号信息 已测试
+#查询账号信息 测试完毕
 def getUserInfo(userAcnt):
     userid = acnt_to_id(userAcnt)
     e = session.query(User).filter(User.id == userid).first()
     print(e)
     return {"username":e.username,"headpic":e.headpic,"coin":e.coin,"role":e.role}
 
-#活动状态查询 未测试
+#活动状态查询 测试完毕
 def getActStatu(aid):
     e = session.query(Activity).filter(Activity.id == aid).first()
     return e.status
 
 
-#用户历史活动查询 未测试
+#用户历史活动查询 测试完毕
 def getActHistory(userAcnt):
     uid = acnt_to_id(userAcnt)
     aidlist = session.query(Act_User.activity_id).filter(Act_User.user_id ==uid).all()
     actList = []
     for i in aidlist:
-        act = session.query(Activity).filter(Activity.id == i).first()
+        act = session.query(Activity).filter(Activity.id == i[0]).first()
         if act.status!= 0 :
-            actList.append({'startT':act.startdate,'actInfo':act.actInfo,'profit':act.profit*act.buff})
+            actList.append({'startT':act.startdate,'actInfo':act.info,'profit':act.profit*act.buff})
     return actList
+
+
+#用户登录 测试完毕
+def login(userAcnt,userPwd):
+    e = ifAcntExist(userAcnt)
+    if isinstance(e,int):
+        if e>1:
+            print("数据错误！存在多个相同账号！")
+            return 3
+        elif e==0 :
+            print("账号不存在")
+            return 2
+    else:
+        if e.password == userPwd:
+            return 1
+        else :
+            return 0
+
