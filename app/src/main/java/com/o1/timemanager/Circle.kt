@@ -71,14 +71,17 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
 
     override fun onDraw(canvas: Canvas) {
         super.onDraw(canvas)
-        val fillAng = (filledValue + seconds.toFloat() / 60f - startValue)*360f/(fullValue - startValue)
-        pointCenterX = (wCenter + diameter / 2 * cos((fillAng - 90f) * PI / 180f)).toFloat()
-        pointCenterY = (hCenter + diameter / 2 * sin((fillAng - 90f) * PI / 180f)).toFloat()
+        var fillAng = (filledValue + seconds.toFloat() / 60f - startValue)*360f/(fullValue - startValue)
         minutes = if (!timerStarted) {
             round(filledValue / stepValue).toInt() * stepValue
         } else {
             filledValue.toInt()
         }
+        if (fillAng < 0) {
+            fillAng = 0f
+        }
+        pointCenterX = (wCenter + diameter / 2 * cos((fillAng - 90f) * PI / 180f)).toFloat()
+        pointCenterY = (hCenter + diameter / 2 * sin((fillAng - 90f) * PI / 180f)).toFloat()
         canvas.apply {
             drawArc(oval, -90f,fillAng,false, arcFillPen)
             drawArc(oval, fillAng - 90f, 360f-fillAng, false, arcEmptyPen)
@@ -124,6 +127,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
                 distanceY: Float
             ): Boolean {
                 if (touchPoint && !timerStarted) {
+                    seconds = 0
                     var filledAng = acos(
                         dotProd(e2.x - wCenter, e2.y - hCenter, 0f, -1f) /
                                 distance(e2.x, e2.y, wCenter, hCenter)
@@ -181,7 +185,7 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
     }
 
     fun startTimer() {
-        countdownTimer = object : CountDownTimer(minutes.toLong()*60*1000, 1000) {
+        countdownTimer = object : CountDownTimer((minutes.toLong()*60 + seconds)*1000, 1000) {
             override fun onFinish() {
                 println("Finish")
             }

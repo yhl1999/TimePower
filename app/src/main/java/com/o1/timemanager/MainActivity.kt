@@ -16,6 +16,8 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.JsonObject
+import com.o1.timemanager.ui.backpack.BackpackFragment
+import com.o1.timemanager.ui.home.HomeFragment
 import com.o1.timemanager.ui.lottery.LotteryFragment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
@@ -52,7 +54,33 @@ class MainActivity : AppCompatActivity() {
             .build()
         val navController: NavController =
             Navigation.findNavController(this, R.id.nav_host_fragment)
-        NavigationUI.setupWithNavController(navigationView, navController)
+//        NavigationUI.setupWithNavController(navigationView, navController)
+        val homeFragment = HomeFragment()
+        var atHome = true
+
+        navigationView.setNavigationItemSelectedListener {
+            val transaction = supportFragmentManager.beginTransaction()
+            when (it.itemId) {
+                R.id.nav_home -> {
+                    if (!atHome) {
+                        transaction.replace(R.id.nav_host_fragment, homeFragment)
+                    }
+                }
+                R.id.nav_information -> {
+                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, BackpackFragment())
+                    atHome = false
+                }
+                R.id.nav_knapsack -> {
+                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, LotteryFragment())
+                    atHome = false
+                }
+                else -> {
+                }
+            }
+            transaction.commit()
+            drawer.closeDrawer(navigationView)
+            true
+        }
 
         val headerView = navigationView.getHeaderView(0)
         val avatar: ImageView = headerView.findViewById(R.id.avatar)
