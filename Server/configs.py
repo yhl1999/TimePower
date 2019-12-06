@@ -8,3 +8,6 @@ _charset = "utf8"
 DB_URI = 'mysql+pymysql://{0}:{1}@{2}/{3}'.format(
     _user,_pwd,_host,_database
 )
+
+#抽卡价格
+CardValue = 100

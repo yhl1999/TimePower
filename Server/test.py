@@ -145,4 +145,31 @@ def test12(url):
     print(r)
     print(r.text)  
 
-test3(cloud)
+def test13(url):
+    d = {'apicode':13,'userAcnt':'Lyh'}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text) 
+
+def test14(url):
+    d = {'apicode':14,'userAcnt':'Lyh','actType':1,'actInfo':''}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test15(url):
+    d = {'apicode':15,'userAcnt':'Lyh','teamIndex':0}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+
+def test16(url):
+    d = {'apicode':16,'teamIndex':0}
+    r = requests.post(url,json = d)
+    print(r)
+    print(r.text)
+test14(localhost)
+test14(localhost)
+test14(localhost)
+test16(localhost)
+test14(localhost)

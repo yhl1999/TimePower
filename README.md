@@ -109,7 +109,7 @@ This is an intersting time management software
   + 账号创建失败：0
 
 
-#### 创建活动-crtAct
+#### 创建单人活动-crtOneAct
 + 接口编号：2
 + 参数：用户账号列表-userAcnts，活动类型-actType，活动信息-actInfo
 + 功能：创建活动信息，写入activity表，同时根据用户列表创建U-A表项
@@ -196,6 +196,40 @@ This is an intersting time management software
 + 功能：根据用户账号查询用户的历史活动，返回该用户所有活动的起始时间、活动信息、收益
 + 返回值：包含所有活动信息的列表-actList，列表中的每一项是一个包含起始时间startT，活动信息actInfo，收益profit的字典
 
+#### 抽取人物-randRole
++ 接口编号：13
++ 参数：用户账号userAcnt
++ 功能：为指定用户抽取人物，需验证账号的金币数并扣除，若金币数足够则扣除抽卡所用金币数并将记录添加到U-R表，若金币不够则抽取失败
++ 返回值：状态码statu
+  + 若成功抽取返回抽取到的人物的编号rid
+  + 金币不足返回0
+  + 其他错误返回-1
+
+#### 创建队伍活动-crtTeamActivity
++ 接口编号：14
++ 参数：用户账号userAcnt，活动类型actType，活动信息actInfo
++ 功能：创建一个队伍与一个活动，并将队伍的序列号与活动编号绑定。活动初始状态置为-2代表匹配中
++ 返回值：statu
+  + 若创建成功则返回队伍序列号
+  + 若创建失败则返回-1
+
+#### 加入队伍-joinActivity
++ 接口编号：15
++ 参数：用户账号userAcnt,队伍序列号teamIndex
++ 功能：加入指定的队伍
++ 返回值：状态码statu
+  + 加入成功返回1
+  + 加入失败返回-1
+
+#### 结束组队-endTeamActivity
++ 接口编号：16
++ 参数：队伍序列号teamIndex
++ 功能：结束匹配中的活动
++ 返回值：状态码statu
+  + 结束成功返回1
+  + 队伍序列号已过期返回-1
+  + 结束失败返回0
+
 ### 次级接口
 #### 账号存在性检_ifAcntExist
 + 参数：用户账号_userAcnt
@@ -228,5 +262,15 @@ This is an intersting time management software
 + 返回值：状态码statu
   + 成功返回True
   + 失败返回False
+
+#### 创建活动表项-crtAct
++ 参数：活动类型-actType，活动信息-info
++ 功能：添加一项新的活动到Activity表
++ 返回值：创建成功返回新活动项的id，创建失败返回-1
+
+#### 修改活动状态-changeActStu
++ 参数：活动id-aid，更改的状态statuCode
++ 功能：若活动原状态为-2，可更改为0或-1，若原装态为0可更改为-1或1
++ 返回值：更改成功返回True，失败返回False
 
 [*_*]:可拓展的功能：宠物系统，开宠物卡池，宠物每天可有一定几率带回道具；增加道具：恶魔的挑战书（使用后24h内，完成一次两小时以上自习可获得额外道具）

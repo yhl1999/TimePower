@@ -1,10 +1,13 @@
 import pymysql
 import time
 import datetime
+import random
 from sqlalchemy import *
 from sqlalchemy.orm import create_session
 from sqlalchemy.ext.declarative import declarative_base
 from configs import DB_URI
+import configs
+from que import QUEUE
 
 engine = create_engine(DB_URI)
 Base = declarative_base()
@@ -168,11 +171,11 @@ def changeRole(userAcnt,rid):
         else:
             return False
 
-#创建活动 测试完毕
-def crtAct(userAcnts,actType,actInfo):
+#创建活动表项
+def crtAct(actType,actInfo,actstatu = 0):
     _type = actType
     info = actInfo
-    status = 0
+    status = actstatu
     profit = calprofit(actType,actInfo)
     buff = 1
     aid = -1
@@ -183,6 +186,11 @@ def crtAct(userAcnts,actType,actInfo):
     session.add(newact)
     session.commit()
     aid = newact.id
+    return aid
+
+#创建单人活动 测试完毕
+def crtOneAct(userAcnts,actType,actInfo):
+    aid = crtAct(actType,actInfo)
     #创建activity—user表项
     if aid == -1:
         return False
@@ -216,7 +224,7 @@ def acnt_to_id(acnt):
 
 #获得角色 未测试
 def getRole(uid,rid):
-    getdate = datetime.date.now()
+    getdate = datetime.datetime.now()
     newrole = User_Role(uid,rid,getdate)
     session.begin()
     session.add(newrole)
@@ -294,3 +302,71 @@ def login(userAcnt,userPwd):
         else :
             return 0
 
+#抽取人物 测试完毕
+def randRole(userAcnt):
+    e = ifAcntExist(userAcnt)
+    if e==0 :
+        return -1
+    else:
+        if e.coin < configs.CardValue:
+            return 0
+        else :
+            uid = acnt_to_id(userAcnt)
+            rlist = session.query(Role).all()
+            num = len(rlist)
+            x = random.randint(0,num-1)
+            rid = rlist[x].id
+            getRole(uid,rid)
+            changeCoin(uid,0,configs.CardValue)
+            return rid
+
+#创建队伍活动 未测试
+def crtTeamActivity(userAcnt,actType,actInfo):
+    aid = -1
+    aid = crtAct(actType,actInfo,-2)
+    uid = acnt_to_id(userAcnt)
+    crtU_A(uid,aid)
+    if aid == -1:
+        return -1
+    else:
+        return QUEUE.add(aid)
+
+#加入队伍 测试完毕 
+def joinActivity(userAcnt,teamindex):
+    uid = acnt_to_id(userAcnt)
+    aid = QUEUE.check(teamindex)
+    
+    if changeActStu(aid,0) :
+        crtU_A(uid,aid)
+        QUEUE.delt(aid)
+        return 1
+    else :
+        return -1
+
+#修改活动状态 测试完毕
+def changeActStu(aid,statuCode):
+    e = session.query(Activity).filter(Activity.id == aid).first()
+    if e:
+        if e.status == -2 and (statuCode==0 or statuCode == -1) :
+            e.status = statuCode
+            return True
+        elif e.status == 0 and (statuCode == -1 or statuCode == 1):
+            e.status = statuCode
+            return True
+        else :
+            return False
+    else :
+        #活动不存在
+        return False
+
+#结束组队 测试完毕
+def endTeamActivity(teamindex):
+    aid = QUEUE.check(teamindex)
+    QUEUE.delt(aid)
+    if aid == -1:
+        return -1
+    else:
+        if changeActStu(aid,-1):
+            return 1
+        else :
+            return 0
