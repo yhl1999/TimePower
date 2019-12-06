@@ -52,36 +52,42 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                 String regex = "^![a-zA-Z0-9]{6,12}$";
                 if (username.matches(regex)) {
                     Toast.makeText(RegisterActivity.this, "用户名长度或组成不合法", Toast.LENGTH_SHORT).show();
-                } else if (password.matches(regex)) {
+                    return;
+                }
+                if (password.matches(regex)) {
                     Toast.makeText(RegisterActivity.this, "密码长度或组成不合法", Toast.LENGTH_SHORT).show();
-                } else if (!password.equals(surepassword)) {
+                    return;
+                }
+                if (!password.equals(surepassword)) {
                     Toast.makeText(RegisterActivity.this, "两次密码不一致请重新输入", Toast.LENGTH_SHORT).show();
                     surepasswordText.setText("");
-                } else {
-                    //显示欢迎界面
-                    AlertDialog.Builder dialog = new AlertDialog.Builder(RegisterActivity.this);
-                    Retrofit retrofit = new Retrofit.Builder()
-                            .baseUrl("http://121.36.56.36:5000/")
-                            .addConverterFactory(GsonConverterFactory.create())
-                            .build();
-                    Api api = retrofit.create(Api.class);
-                    JsonObject body = new JsonObject();
-                    body.addProperty("apicode", 1);
-                    body.addProperty("newAcnt", username);
-                    body.addProperty("newPwd", password);
-                    api.post(body).enqueue(new Callback<JsonObject>() {
-                        @Override
-                        public void onResponse(@NotNull Call<JsonObject> call, @NotNull Response<JsonObject> response) {
-                            if (response.body() != null) {
-                                System.out.println(response.body().get("statu").getAsInt());
-                                int state = response.body().get("statu").getAsInt();
-                                if(state == -1){
-                                    Toast.makeText(RegisterActivity.this,"该账户已经存在！请换一个用户名",Toast.LENGTH_SHORT).show();
-                                }
-                                else if(state == 0){
-                                    Toast.makeText(RegisterActivity.this,"用户创建失败！",Toast.LENGTH_SHORT).show();
-                                }
-                                else if(state == 1){
+                    return;
+                }
+                //显示欢迎界面
+                AlertDialog.Builder dialog = new AlertDialog.Builder(RegisterActivity.this);
+                Retrofit retrofit = new Retrofit.Builder()
+                        .baseUrl("http://121.36.56.36:5000/")
+                        .addConverterFactory(GsonConverterFactory.create())
+                        .build();
+                Api api = retrofit.create(Api.class);
+                JsonObject body = new JsonObject();
+                body.addProperty("apicode", 1);
+                body.addProperty("newAcnt", username);
+                body.addProperty("newPwd", password);
+                api.post(body).enqueue(new Callback<JsonObject>() {
+                    @Override
+                    public void onResponse(@NotNull Call<JsonObject> call, @NotNull Response<JsonObject> response) {
+                        if (response.body() != null) {
+                            //System.out.println(response.body().get("statu").getAsInt());
+                            int state = response.body().get("statu").getAsInt();
+                            switch (state) {
+                                case -1:
+                                    Toast.makeText(RegisterActivity.this, "该账户已经存在！请换一个用户名", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 0:
+                                    Toast.makeText(RegisterActivity.this, "用户创建失败！", Toast.LENGTH_SHORT).show();
+                                    break;
+                                case 1:
                                     dialog.setTitle("注册成功");
                                     dialog.setMessage("用户名" + username + " 密码" + password);
                                     dialog.setPositiveButton("现在登录", new DialogInterface.OnClickListener() {
@@ -99,19 +105,20 @@ public class RegisterActivity extends AppCompatActivity implements View.OnClickL
                                         }
                                     });
                                     dialog.show();
-                                }
+                                    break;
                             }
                         }
+                    }
 
-                        @Override
-                        public void onFailure(@NotNull Call<JsonObject> call, @NotNull Throwable t) {
-                            t.printStackTrace();
-                            dialog.setTitle("注册失败");
-                            dialog.setMessage("请联系管理员");
-                            dialog.show();
-                        }
-                    });
-                }
+                    @Override
+                    public void onFailure(@NotNull Call<JsonObject> call, @NotNull Throwable t) {
+                        t.printStackTrace();
+                        dialog.setTitle("注册失败");
+                        dialog.setMessage("请联系管理员");
+                        dialog.show();
+                    }
+                });
+
                 break;
             //清空输入
             case R.id.buttonCancel:
