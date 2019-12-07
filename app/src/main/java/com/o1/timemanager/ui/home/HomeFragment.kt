@@ -12,10 +12,12 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
+import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.o1.timemanager.Circle
 import com.o1.timemanager.MainActivity
 import com.o1.timemanager.R
+import com.o1.timemanager.ui.team.InTeamFragment
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -53,8 +55,6 @@ class HomeFragment : Fragment() {
             }
         }
 
-        team.setOnClickListener {
-        }
         return root
     }
 
@@ -63,6 +63,7 @@ class HomeFragment : Fragment() {
         val mainActivity = activity as MainActivity
         val userAcnt = mainActivity.userAcnt
         val api = mainActivity.api
+        mainActivity.circle = circle
         if (mainActivity.isLogin) {
 
             val body = JsonObject().apply {
@@ -107,6 +108,33 @@ class HomeFragment : Fragment() {
                     }
                 }
             })
+
+
+            team.setOnClickListener {
+                mainActivity.api.post(JsonObject().apply {
+                    addProperty("apicode", 14)
+                    add("userAcnt", JsonArray().apply {
+                        add(mainActivity.userAcnt)
+                    })
+                    addProperty("actType", 0)
+                    add("actInfo", JsonObject())
+                }).enqueue(object : Callback<JsonObject> {
+                    override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                        Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+                    }
+
+                    override fun onResponse(
+                        call: Call<JsonObject>,
+                        response: Response<JsonObject>
+                    ) {
+                        Toast.makeText(
+                            context,
+                            "队伍编号：${response.body()?.get("statu")?.asInt.toString()}",
+                            Toast.LENGTH_LONG
+                        ).show()
+                    }
+                })
+            }
         }
     }
 }

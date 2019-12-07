@@ -10,6 +10,8 @@ import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
+import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentTransaction
 import androidx.navigation.NavController
 import androidx.navigation.Navigation
 import androidx.navigation.ui.AppBarConfiguration
@@ -19,6 +21,7 @@ import com.google.gson.JsonObject
 import com.o1.timemanager.ui.backpack.BackpackFragment
 import com.o1.timemanager.ui.home.HomeFragment
 import com.o1.timemanager.ui.lottery.LotteryFragment
+import com.o1.timemanager.ui.team.OutTeamFragment
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -32,6 +35,14 @@ class MainActivity : AppCompatActivity() {
     var isLogin = false
     var username: String? = null
     var userAcnt: String? = null
+    var atHome = false
+    lateinit var homeFragment: Fragment
+    var minutes: Int = 0
+    var seconds: Int = 0
+    lateinit var circle: Circle
+    var inTeam = false
+    var teamId = 0
+    lateinit var transaction: FragmentTransaction
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,15 +66,16 @@ class MainActivity : AppCompatActivity() {
         val navController: NavController =
             Navigation.findNavController(this, R.id.nav_host_fragment)
 //        NavigationUI.setupWithNavController(navigationView, navController)
-        val homeFragment = HomeFragment()
-        var atHome = true
+        homeFragment = HomeFragment()
+        atHome = true
 
         navigationView.setNavigationItemSelectedListener {
-            val transaction = supportFragmentManager.beginTransaction()
+            transaction = supportFragmentManager.beginTransaction()
             when (it.itemId) {
                 R.id.nav_home -> {
                     if (!atHome) {
                         transaction.replace(R.id.nav_host_fragment, homeFragment)
+                        atHome = true
                     }
                 }
                 R.id.nav_information -> {
@@ -72,6 +84,10 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_knapsack -> {
                     transaction.hide(homeFragment).add(R.id.nav_host_fragment, LotteryFragment())
+                    atHome = false
+                }
+                R.id.nav_team -> {
+                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, OutTeamFragment())
                     atHome = false
                 }
                 else -> {
@@ -105,6 +121,16 @@ class MainActivity : AppCompatActivity() {
 
         }
 
+    }
+
+    override fun onBackPressed() {
+        if (!atHome) {
+            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, homeFragment).commit()
+            atHome = true
+        }
+        else {
+            super.onBackPressed()
+        }
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean { // Inflate the menu; this adds items to the action bar if it is present.
