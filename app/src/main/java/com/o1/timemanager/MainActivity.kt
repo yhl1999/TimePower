@@ -21,7 +21,10 @@ import com.google.gson.JsonObject
 import com.o1.timemanager.ui.backpack.BackpackFragment
 import com.o1.timemanager.ui.home.HomeFragment
 import com.o1.timemanager.ui.lottery.LotteryFragment
+import com.o1.timemanager.ui.team.InTeamFragment
 import com.o1.timemanager.ui.team.OutTeamFragment
+import com.rabbitmq.client.Channel
+import com.rabbitmq.client.Connection
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
@@ -33,16 +36,21 @@ class MainActivity : AppCompatActivity() {
     lateinit var user: JsonObject
     lateinit var api: Api
     var isLogin = false
-    var username: String? = null
-    var userAcnt: String? = null
-    var atHome = false
+    var username: String = ""
+    var userAcnt: String = ""
     lateinit var homeFragment: Fragment
+    lateinit var backpackFragment: Fragment
+    lateinit var lotteryFragment: Fragment
+    lateinit var inTeamFragment: Fragment
+    lateinit var outTeamFragment: Fragment
+    lateinit var currentFragment: Fragment
     var minutes: Int = 0
     var seconds: Int = 0
     lateinit var circle: Circle
-    var inTeam = false
-    var teamId = 0
-    lateinit var transaction: FragmentTransaction
+    var teamUUID = ""
+    lateinit var conn: Connection
+    lateinit var channel: Channel
+    var captain = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -50,8 +58,8 @@ class MainActivity : AppCompatActivity() {
 
         sp = getSharedPreferences("info", Context.MODE_PRIVATE)
         isLogin = sp.getBoolean("isLogin", false)
-        username = sp.getString("username", "Time Power")
-        userAcnt = sp.getString("userAcnt", "Time Power")
+        username = sp.getString("username", "Time Power").toString()
+        userAcnt = sp.getString("userAcnt", "Time Power").toString()
 
         val drawer: DrawerLayout = findViewById(R.id.drawer_layout)
         navigationView = findViewById(R.id.nav_view)
@@ -67,33 +75,30 @@ class MainActivity : AppCompatActivity() {
             Navigation.findNavController(this, R.id.nav_host_fragment)
 //        NavigationUI.setupWithNavController(navigationView, navController)
         homeFragment = HomeFragment()
-        atHome = true
+        backpackFragment = BackpackFragment()
+        lotteryFragment = LotteryFragment()
+        inTeamFragment = InTeamFragment()
+        outTeamFragment = OutTeamFragment()
+
+        currentFragment = homeFragment
 
         navigationView.setNavigationItemSelectedListener {
-            transaction = supportFragmentManager.beginTransaction()
             when (it.itemId) {
                 R.id.nav_home -> {
-                    if (!atHome) {
-                        transaction.replace(R.id.nav_host_fragment, homeFragment)
-                        atHome = true
-                    }
+                    switchFragment(homeFragment).commit()
                 }
                 R.id.nav_information -> {
-                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, BackpackFragment())
-                    atHome = false
+                    switchFragment(backpackFragment).commit()
                 }
                 R.id.nav_knapsack -> {
-                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, LotteryFragment())
-                    atHome = false
+                    switchFragment(lotteryFragment).commit()
                 }
                 R.id.nav_team -> {
-                    transaction.hide(homeFragment).add(R.id.nav_host_fragment, OutTeamFragment())
-                    atHome = false
+                    switchFragment(outTeamFragment).commit()
                 }
                 else -> {
                 }
             }
-            transaction.commit()
             drawer.closeDrawer(navigationView)
             true
         }
@@ -120,16 +125,29 @@ class MainActivity : AppCompatActivity() {
             textUsername.text = username
 
         }
+    }
 
+    fun leaveTeam() {
+        currentFragment = if (captain) {
+            homeFragment
+        } else {
+            outTeamFragment
+        }
+        supportFragmentManager.beginTransaction().remove(inTeamFragment).show(currentFragment).commit()
+        teamUUID = ""
     }
 
     override fun onBackPressed() {
-        if (!atHome) {
-            supportFragmentManager.beginTransaction().replace(R.id.nav_host_fragment, homeFragment).commit()
-            atHome = true
-        }
-        else {
-            super.onBackPressed()
+        when {
+//            currentFragment == inTeamFragment -> {
+//                leaveTeam()
+//            }
+            currentFragment != homeFragment -> {
+                switchFragment(homeFragment).commit()
+            }
+            else -> {
+                super.onBackPressed()
+            }
         }
     }
 
@@ -143,5 +161,24 @@ class MainActivity : AppCompatActivity() {
             Navigation.findNavController(this, R.id.nav_host_fragment)
         return (NavigationUI.navigateUp(navController, mAppBarConfiguration)
                 || super.onSupportNavigateUp())
+    }
+
+    fun switchFragment(fragment: Fragment): FragmentTransaction {
+        val transaction = supportFragmentManager.beginTransaction()
+        if (!fragment.isAdded) {
+            if (::currentFragment.isInitialized) {
+                transaction.hide(currentFragment)
+            }
+            transaction.add(R.id.nav_host_fragment, fragment, fragment.javaClass.name)
+        }
+        else {
+            transaction.hide(currentFragment).show(fragment)
+        }
+        currentFragment = fragment
+        return transaction
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
     }
 }

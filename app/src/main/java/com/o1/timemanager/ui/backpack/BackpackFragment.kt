@@ -94,4 +94,9 @@ class BackpackFragment : Fragment() {
 
         return root
     }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        println("BackpackDestroy")
+    }
 }

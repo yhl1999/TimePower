@@ -7,5 +7,5 @@ import retrofit2.http.POST
 
 interface Api {
     @POST("/")
-    fun post(@Body apiReq: JsonObject): Call<JsonObject>
+    fun post(@Body body: JsonObject): Call<JsonObject>
 }

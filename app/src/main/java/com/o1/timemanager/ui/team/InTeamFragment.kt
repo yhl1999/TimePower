@@ -4,16 +4,23 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
+import android.widget.LinearLayout
+import android.widget.TextView
 import androidx.fragment.app.Fragment
-import com.google.gson.JsonObject
+import androidx.fragment.app.FragmentTransaction
 import com.o1.timemanager.MainActivity
 import com.o1.timemanager.R
-import java.util.*
+import com.rabbitmq.client.BuiltinExchangeType
+import com.rabbitmq.client.ConnectionFactory
+import com.rabbitmq.client.Delivery
+import java.lang.Exception
 
 class InTeamFragment : Fragment() {
-    val timer = Timer()
-    lateinit var timerTask: TimerTask
     lateinit var mainActivity: MainActivity
+    lateinit var teamsLayout: LinearLayout
+    var members: MutableSet<String> = mutableSetOf()
+    var exchangeName = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -22,13 +29,138 @@ class InTeamFragment : Fragment() {
     ): View? {
         mainActivity = activity as MainActivity
         val root = inflater.inflate(R.layout.in_team, container, false)
-        timerTask = object : TimerTask(){
-            override fun run() {
-                mainActivity.api.post(JsonObject().apply {
+        teamsLayout = root.findViewById(R.id.teams)
+        val teamCancel: Button = root.findViewById(R.id.team_cancel)
+        val uuid: TextView = root.findViewById(R.id.uuid)
 
-                })
+        uuid.text = mainActivity.teamUUID
+        mainActivity.runOnUiThread {
+            val member = inflater.inflate(R.layout.member, teamsLayout, false)
+            val userAcnt: TextView = member.findViewById(R.id.userAcnt)
+            userAcnt.text = mainActivity.userAcnt
+            teamsLayout.addView(member)
+        }
+        members.add(mainActivity.userAcnt)
+
+        if (mainActivity.teamUUID != "") {
+            Thread {
+                mainActivity.conn = ConnectionFactory().apply {
+                    host = "121.36.56.36"
+                    username = "timepower"
+                    password = "timepower"
+                }.newConnection()
+                mainActivity.channel = mainActivity.conn.createChannel()
+                println("channel created")
+
+                println("publish")
+                exchangeName = "team_${mainActivity.teamUUID}"
+                mainActivity.channel.exchangeDeclare(
+                    exchangeName,
+                    BuiltinExchangeType.FANOUT
+                )
+                val queueName = mainActivity.channel.queueDeclare().queue
+                mainActivity.channel.queueBind(
+                    queueName,
+                    exchangeName,
+                    ""
+                )
+                mainActivity.channel.basicPublish(
+                    exchangeName,
+                    "",
+                    null,
+                    "join_${mainActivity.userAcnt}".toByteArray()
+                )
+                mainActivity.channel.basicConsume(
+                    queueName,
+                    true,
+                    { consumerTag: String, delivery: Delivery ->
+                        var message = delivery.body.toString(Charsets.UTF_8)
+
+                        if (mainActivity.captain) {
+                            if (message.startsWith("join_")) {
+                                message = message.substring(5)
+
+                                members.add(message)
+
+                                refreshMembers(layoutInflater)
+
+                                mainActivity.channel.basicPublish(
+                                    exchangeName,
+                                    "",
+                                    null,
+                                    "total_${members.joinToString(separator = "&")}".toByteArray()
+                                )
+                            }
+                            else if (message.startsWith("leave_")) {
+                                message = message.substring(6)
+                                members.remove(message)
+
+                                refreshMembers(layoutInflater)
+
+                                mainActivity.channel.basicPublish(
+                                    exchangeName,
+                                    "",
+                                    null,
+                                    "total_${members.joinToString(separator = "&")}".toByteArray()
+                                )
+                            }
+                        } else {
+                            if (message.startsWith("total_")) {
+                                message = message.substring(6)
+
+                                members = message.split("&").toMutableSet()
+
+                                println(members)
+                                refreshMembers(inflater)
+                            }
+                            if (message == "close") {
+                                mainActivity.leaveTeam()
+                            }
+                        }
+                        println(message)
+                    },
+                    { _ -> })
+            }.start()
+        }
+
+        teamCancel.setOnClickListener {
+            mainActivity.leaveTeam()
+        }
+
+        return root
+    }
+
+    private fun refreshMembers(inflater: LayoutInflater) {
+        mainActivity.runOnUiThread {
+            teamsLayout.removeAllViews()
+            for (member in members) {
+                val memberView: TextView =
+                    inflater.inflate(R.layout.member, teamsLayout, false)
+                        .findViewById(R.id.userAcnt)
+                memberView.text = member
+                teamsLayout.addView(memberView)
             }
         }
-        return root
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        Thread {
+            try {
+                if (mainActivity.channel.isOpen) {
+                    if (mainActivity.captain) {
+                        mainActivity.channel.basicPublish(exchangeName, "", null, "close".toByteArray())
+                        mainActivity.channel.exchangeDelete(exchangeName)
+                    }
+                    else {
+                        mainActivity.channel.basicPublish(exchangeName, "", null, "leave_${mainActivity.userAcnt}".toByteArray())
+                    }
+                    mainActivity.channel.close()
+                }
+                if (mainActivity.conn.isOpen) {
+                    mainActivity.conn.close()
+                }
+            } catch (ignore: Exception) {}
+        }.start()
     }
 }

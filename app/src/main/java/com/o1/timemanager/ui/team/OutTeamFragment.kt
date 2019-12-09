@@ -10,9 +10,12 @@ import androidx.fragment.app.Fragment
 import com.google.gson.JsonObject
 import com.o1.timemanager.MainActivity
 import com.o1.timemanager.R
+import com.rabbitmq.client.BuiltinExchangeType
+import com.rabbitmq.client.ConnectionFactory
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.util.*
 
 class OutTeamFragment : Fragment() {
     override fun onCreateView(
@@ -26,22 +29,9 @@ class OutTeamFragment : Fragment() {
         val addTeam: Button = root.findViewById(R.id.add_team)
         val teamId: TextView = root.findViewById(R.id.team_id)
         addTeam.setOnClickListener {
-            mainActivity.teamId = teamId.text.toString().toInt()
-            mainActivity.api.post(JsonObject().apply {
-                addProperty("apicode", 15)
-                addProperty("userAcnt", mainActivity.userAcnt)
-                addProperty("teamIndex", mainActivity.teamId)
-            }).enqueue(object : Callback<JsonObject>{
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    t.printStackTrace()
-                }
+            mainActivity.teamUUID = teamId.text.toString()
 
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    mainActivity.transaction.replace(R.id.nav_host_fragment, mainActivity.homeFragment).commit()
-                    mainActivity.atHome = true
-                    mainActivity.circle.startTimer()
-                }
-            })
+            mainActivity.switchFragment(mainActivity.inTeamFragment).commit()
         }
         return root
     }
