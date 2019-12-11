@@ -56,6 +56,10 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
         textAlign = Paint.Align.CENTER
         typeface = Typeface.createFromAsset(context.assets, "fonts/Lato-Light.ttf")
     }
+    private val circleFillPen = Paint(ANTI_ALIAS_FLAG).apply {
+        color = Color.WHITE
+        style = Paint.Style.FILL
+    }
     private var diameter: Float = 0.0f
     private lateinit var oval: RectF
 
@@ -83,6 +87,11 @@ class Circle(context: Context, attrs: AttributeSet) : View(context, attrs) {
         pointCenterX = (wCenter + diameter / 2 * cos((fillAng - 90f) * PI / 180f)).toFloat()
         pointCenterY = (hCenter + diameter / 2 * sin((fillAng - 90f) * PI / 180f)).toFloat()
         canvas.apply {
+            drawCircle(
+                wCenter,
+                hCenter,
+                diameter/2, circleFillPen
+            )
             drawArc(oval, -90f,fillAng,false, arcFillPen)
             drawArc(oval, fillAng - 90f, 360f-fillAng, false, arcEmptyPen)
             drawCircle(

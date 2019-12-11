@@ -7,6 +7,7 @@ import android.os.Bundle
 import android.view.Menu
 import android.widget.ImageView
 import android.widget.TextView
+import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -18,6 +19,7 @@ import androidx.navigation.ui.AppBarConfiguration
 import androidx.navigation.ui.NavigationUI
 import com.google.android.material.navigation.NavigationView
 import com.google.gson.JsonObject
+import com.google.zxing.integration.android.IntentIntegrator
 import com.o1.timemanager.ui.backpack.BackpackFragment
 import com.o1.timemanager.ui.home.HomeFragment
 import com.o1.timemanager.ui.lottery.LotteryFragment
@@ -50,7 +52,7 @@ class MainActivity : AppCompatActivity() {
     var teamUUID = ""
     lateinit var conn: Connection
     lateinit var channel: Channel
-    var captain = false
+    var isCaptain = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -128,13 +130,26 @@ class MainActivity : AppCompatActivity() {
     }
 
     fun leaveTeam() {
-        currentFragment = if (captain) {
+        currentFragment = if (isCaptain) {
             homeFragment
         } else {
             outTeamFragment
         }
         supportFragmentManager.beginTransaction().remove(inTeamFragment).show(currentFragment).commit()
         teamUUID = ""
+    }
+
+    fun joinTeam(teamUUID: String, isCaptain: Boolean = false) {
+
+        if (teamUUID.matches(Regex("^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$"))) {
+            this.teamUUID = teamUUID
+            this.isCaptain = isCaptain
+
+            switchFragment(inTeamFragment).commit()
+        }
+        else {
+            Toast.makeText(this, "${teamUUID}不是队伍编号", Toast.LENGTH_SHORT).show()
+        }
     }
 
     override fun onBackPressed() {
@@ -178,6 +193,16 @@ class MainActivity : AppCompatActivity() {
         return transaction
     }
 
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        val intentResult = IntentIntegrator.parseActivityResult(requestCode, resultCode, data)
+        if (intentResult.contents == null) {
+            Toast.makeText(this, "扫码失败", Toast.LENGTH_SHORT).show()
+        }
+        else {
+            joinTeam(intentResult.contents)
+        }
+    }
     override fun onDestroy() {
         super.onDestroy()
     }

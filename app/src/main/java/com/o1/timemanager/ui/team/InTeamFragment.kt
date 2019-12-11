@@ -5,10 +5,12 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.FragmentTransaction
+import com.google.zxing.BarcodeFormat
+import com.journeyapps.barcodescanner.BarcodeEncoder
 import com.o1.timemanager.MainActivity
 import com.o1.timemanager.R
 import com.rabbitmq.client.BuiltinExchangeType
@@ -32,6 +34,7 @@ class InTeamFragment : Fragment() {
         teamsLayout = root.findViewById(R.id.teams)
         val teamCancel: Button = root.findViewById(R.id.team_cancel)
         val uuid: TextView = root.findViewById(R.id.uuid)
+        val qrCode: ImageView = root.findViewById(R.id.qr_code)
 
         uuid.text = mainActivity.teamUUID
         mainActivity.runOnUiThread {
@@ -76,7 +79,7 @@ class InTeamFragment : Fragment() {
                     { consumerTag: String, delivery: Delivery ->
                         var message = delivery.body.toString(Charsets.UTF_8)
 
-                        if (mainActivity.captain) {
+                        if (mainActivity.isCaptain) {
                             if (message.startsWith("join_")) {
                                 message = message.substring(5)
 
@@ -127,6 +130,10 @@ class InTeamFragment : Fragment() {
             mainActivity.leaveTeam()
         }
 
+        val qrCodeImage =
+            BarcodeEncoder().encodeBitmap(mainActivity.teamUUID, BarcodeFormat.QR_CODE, 400, 400)
+        qrCode.setImageBitmap(qrCodeImage)
+
         return root
     }
 
@@ -148,7 +155,7 @@ class InTeamFragment : Fragment() {
         Thread {
             try {
                 if (mainActivity.channel.isOpen) {
-                    if (mainActivity.captain) {
+                    if (mainActivity.isCaptain) {
                         mainActivity.channel.basicPublish(exchangeName, "", null, "close".toByteArray())
                         mainActivity.channel.exchangeDelete(exchangeName)
                     }

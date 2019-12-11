@@ -22,6 +22,22 @@
     </com.google.android.material.textfield.TextInputLayout>
 
     <com.google.android.material.button.MaterialButton
+        android:id="@+id/scan"
+        android:layout_width="160dp"
+        android:layout_height="60dp"
+        android:text="扫码"
+        android:textSize="25sp"
+        android:gravity="center"
+        android:textAlignment="center"
+        android:textColor="@android:color/white"
+        app:cornerRadius="10dp"
+        android:shadowColor="#337F63"
+        style="@style/Widget.MaterialComponents.Button.TextButton"
+        android:layout_marginBottom="30dp"
+        app:layout_constraintBottom_toTopOf="@id/add_team"
+        app:layout_constraintLeft_toLeftOf="parent"
+        app:layout_constraintRight_toRightOf="parent"/>
+    <com.google.android.material.button.MaterialButton
         android:id="@+id/add_team"
         android:layout_width="160dp"
         android:layout_height="60dp"

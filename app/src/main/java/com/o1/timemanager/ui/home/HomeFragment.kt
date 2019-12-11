@@ -48,9 +48,7 @@ class HomeFragment : Fragment() {
         coinValue.typeface = Typeface.createFromAsset(context?.assets, "fonts/Lato-Light.ttf")
         begin.setOnClickListener {
             if (teamCheck.isChecked) {
-                mainActivity.captain = true
-                mainActivity.teamUUID = UUID.randomUUID().toString()
-                mainActivity.switchFragment(mainActivity.inTeamFragment).commit()
+                mainActivity.joinTeam(UUID.randomUUID().toString(), true)
             }
             else {
                 if (circle.timerStarted) {

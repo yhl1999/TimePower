@@ -4,7 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="@drawable/background_star"
     tools:context=".MainActivity">
 
     <com.o1.timemanager.Circle
@@ -49,7 +49,7 @@
         android:contentDescription="coin_icon"
         app:layout_constraintLeft_toLeftOf="@id/coin_value"
         app:layout_constraintTop_toTopOf="@id/coin_value"
-        app:srcCompat="@drawable/ic_coin" />
+        app:srcCompat="@drawable/ic_coin_5" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/begin"
