@@ -21,6 +21,7 @@ import com.google.android.material.navigation.NavigationView
 import com.google.gson.JsonObject
 import com.google.zxing.integration.android.IntentIntegrator
 import com.o1.timemanager.ui.backpack.BackpackFragment
+import com.o1.timemanager.ui.history.HistoryFragment
 import com.o1.timemanager.ui.home.HomeFragment
 import com.o1.timemanager.ui.lottery.LotteryFragment
 import com.o1.timemanager.ui.team.InTeamFragment
@@ -46,6 +47,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var inTeamFragment: Fragment
     lateinit var outTeamFragment: Fragment
     lateinit var currentFragment: Fragment
+    lateinit var historyFragment: Fragment
     var minutes: Int = 0
     var seconds: Int = 0
     lateinit var circle: Circle
@@ -81,6 +83,7 @@ class MainActivity : AppCompatActivity() {
         lotteryFragment = LotteryFragment()
         inTeamFragment = InTeamFragment()
         outTeamFragment = OutTeamFragment()
+        historyFragment = HistoryFragment()
 
         currentFragment = homeFragment
 
@@ -97,6 +100,9 @@ class MainActivity : AppCompatActivity() {
                 }
                 R.id.nav_team -> {
                     switchFragment(outTeamFragment).commit()
+                }
+                R.id.nav_history -> {
+                    switchFragment(historyFragment).commit()
                 }
                 else -> {
                 }

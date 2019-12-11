@@ -17,6 +17,7 @@ import com.o1.timemanager.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import java.lang.Exception
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -113,14 +114,16 @@ class HomeFragment : Fragment() {
                             override fun run() {
                                 val role = mainActivity.user.get("role").asInt
                                 resNum = resNum % (if (role == 1) 3 else 2) + 1
-                                icItem.setImageResource(
-                                    resources.getIdentifier(
-                                        "ic_item_${role}_$resNum",
-                                        "drawable",
-                                        context?.packageName
+                                try {
+                                    icItem.setImageResource(
+                                        resources.getIdentifier(
+                                            "ic_item_${role}_$resNum",
+                                            "drawable",
+                                            context?.packageName
+                                        )
                                     )
-                                )
-                                handler.postDelayed(this, 500)
+                                    handler.postDelayed(this, 500)
+                                } catch (ignore: Exception) {}
                             }
                         }
                         handler.postDelayed(runnable, 500)
