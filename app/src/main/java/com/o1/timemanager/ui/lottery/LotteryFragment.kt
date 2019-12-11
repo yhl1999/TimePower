@@ -20,6 +20,7 @@ import retrofit2.Response
 
 class LotteryFragment : Fragment() {
     private var lotteryViewModel: LotteryViewModel? = null
+    lateinit var lottery: ImageView
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?, savedInstanceState: Bundle?
@@ -32,7 +33,7 @@ class LotteryFragment : Fragment() {
 //            .observe(this, Observer { s -> textView.text = s })
 
         val mainActivity: MainActivity = activity as MainActivity
-        val lottery: ImageView = root.findViewById(R.id.lottery)
+        lottery = root.findViewById(R.id.lottery)
         lottery.setOnClickListener {
             mainActivity.api.post(JsonObject().apply {
                 addProperty("apicode", 13)
@@ -64,5 +65,13 @@ class LotteryFragment : Fragment() {
             })
         }
         return root
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (hidden) {
+            lottery.setBackgroundResource(R.drawable.background_lottery)
+            lottery.setImageResource(R.drawable.ic_card_back)
+        }
     }
 }

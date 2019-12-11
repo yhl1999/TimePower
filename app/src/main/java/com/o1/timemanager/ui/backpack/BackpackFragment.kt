@@ -20,6 +20,8 @@ import retrofit2.Response
 
 
 class BackpackFragment : Fragment() {
+    lateinit var mainActivity: MainActivity
+    lateinit var plaids: PlaidsContainer
     private var galleryViewModel: BackpackViewModel? = null
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,9 +35,9 @@ class BackpackFragment : Fragment() {
 //        galleryViewModel!!.text
 //            .observe(this, Observer { s -> textView.text = s })
 
-        val plaids: PlaidsContainer = root.findViewById(R.id.plaids)
+        plaids = root.findViewById(R.id.plaids)
         val icItem: ImageView = root.findViewById(R.id.ic_item)
-        val mainActivity = activity as MainActivity
+        mainActivity = activity as MainActivity
 
         icItem.setImageResource(resources.getIdentifier(
             "ic_item_${mainActivity.user.get("role").asInt}_1",
@@ -71,28 +73,39 @@ class BackpackFragment : Fragment() {
         }
 
         if (mainActivity.isLogin) {
-            mainActivity.api.post(JsonObject().apply {
-                addProperty("apicode", 9)
-                addProperty("userAcnt", mainActivity.userAcnt)
-            }).enqueue(object : Callback<JsonObject>{
-                override fun onFailure(call: Call<JsonObject>, t: Throwable) {
-                    t.printStackTrace()
-                    Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
-                }
-
-                override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
-                    response.body()?.let {
-                        plaids.items.clear()
-                        it.get("roleList").asJsonArray.forEach { item ->
-                            plaids.items.add(item.asInt)
-                        }
-                        plaids.postInvalidate()
-                    }
-                }
-            })
+            loadData()
         }
 
         return root
+    }
+
+    fun loadData() {
+        mainActivity.api.post(JsonObject().apply {
+            addProperty("apicode", 9)
+            addProperty("userAcnt", mainActivity.userAcnt)
+        }).enqueue(object : Callback<JsonObject>{
+            override fun onFailure(call: Call<JsonObject>, t: Throwable) {
+                t.printStackTrace()
+                Toast.makeText(context, "网络错误", Toast.LENGTH_SHORT).show()
+            }
+
+            override fun onResponse(call: Call<JsonObject>, response: Response<JsonObject>) {
+                response.body()?.let {
+                    plaids.items.clear()
+                    it.get("roleList").asJsonArray.forEach { item ->
+                        plaids.items.add(item.asInt)
+                    }
+                    plaids.postInvalidate()
+                }
+            }
+        })
+    }
+
+    override fun onHiddenChanged(hidden: Boolean) {
+        super.onHiddenChanged(hidden)
+        if (!hidden) {
+            loadData()
+        }
     }
 
     override fun onDestroy() {
