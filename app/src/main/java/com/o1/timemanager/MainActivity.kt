@@ -109,6 +109,14 @@ class MainActivity : AppCompatActivity() {
                 R.id.nav_history -> {
                     switchFragment(historyFragment).commit()
                 }
+                R.id.nav_logout -> {
+                    isLogin = false
+                    val edit = sp.edit()
+                    edit.putBoolean("isLogin", false)
+                    edit.putString("userAcnt", "游客")
+                    edit.putString("username", "游客")
+                    edit.apply()
+                }
                 else -> {
                 }
             }
