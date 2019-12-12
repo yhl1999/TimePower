@@ -22,7 +22,6 @@ class InTeamFragment : Fragment() {
     lateinit var mainActivity: MainActivity
     lateinit var teamsLayout: LinearLayout
     var members: MutableSet<String> = mutableSetOf()
-    var exchangeName = ""
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -33,6 +32,7 @@ class InTeamFragment : Fragment() {
         val root = inflater.inflate(R.layout.in_team, container, false)
         teamsLayout = root.findViewById(R.id.teams)
         val teamCancel: Button = root.findViewById(R.id.team_cancel)
+        val teamStart: Button = root.findViewById(R.id.team_start)
         val uuid: TextView = root.findViewById(R.id.uuid)
         val qrCode: ImageView = root.findViewById(R.id.qr_code)
 
@@ -56,19 +56,19 @@ class InTeamFragment : Fragment() {
                 println("channel created")
 
                 println("publish")
-                exchangeName = "team_${mainActivity.teamUUID}"
+                mainActivity.exchangeName = "team_${mainActivity.teamUUID}"
                 mainActivity.channel.exchangeDeclare(
-                    exchangeName,
+                    mainActivity.exchangeName,
                     BuiltinExchangeType.FANOUT
                 )
                 val queueName = mainActivity.channel.queueDeclare().queue
                 mainActivity.channel.queueBind(
                     queueName,
-                    exchangeName,
+                    mainActivity.exchangeName,
                     ""
                 )
                 mainActivity.channel.basicPublish(
-                    exchangeName,
+                    mainActivity.exchangeName,
                     "",
                     null,
                     "join_${mainActivity.userAcnt}".toByteArray()
@@ -79,7 +79,16 @@ class InTeamFragment : Fragment() {
                     { consumerTag: String, delivery: Delivery ->
                         var message = delivery.body.toString(Charsets.UTF_8)
 
-                        if (mainActivity.isCaptain) {
+                        if (message.startsWith("start_")) {
+                            message = message.substring(6)
+                            val time = message.split("_")
+                            mainActivity.circle.minutes = time[0].toInt()
+                            mainActivity.circle.seconds = time[1].toInt()
+                            mainActivity.runOnUiThread {
+                                mainActivity.teamBegin()
+                            }
+                        }
+                        else if (mainActivity.isCaptain) {
                             if (message.startsWith("join_")) {
                                 message = message.substring(5)
 
@@ -88,7 +97,7 @@ class InTeamFragment : Fragment() {
                                 refreshMembers(layoutInflater)
 
                                 mainActivity.channel.basicPublish(
-                                    exchangeName,
+                                    mainActivity.exchangeName,
                                     "",
                                     null,
                                     "total_${members.joinToString(separator = "&")}".toByteArray()
@@ -101,7 +110,7 @@ class InTeamFragment : Fragment() {
                                 refreshMembers(layoutInflater)
 
                                 mainActivity.channel.basicPublish(
-                                    exchangeName,
+                                    mainActivity.exchangeName,
                                     "",
                                     null,
                                     "total_${members.joinToString(separator = "&")}".toByteArray()
@@ -126,6 +135,19 @@ class InTeamFragment : Fragment() {
             }.start()
         }
 
+        teamStart.setOnClickListener {
+            if (mainActivity.isCaptain) {
+                println("start_${mainActivity.circle.minutes}_${mainActivity.circle.seconds}")
+                Thread {
+                    mainActivity.channel.basicPublish(
+                        mainActivity.exchangeName,
+                        "",
+                        null,
+                        "start_${mainActivity.circle.minutes}_${mainActivity.circle.seconds}".toByteArray()
+                    )
+                }.start()
+            }
+        }
         teamCancel.setOnClickListener {
             mainActivity.leaveTeam()
         }
@@ -156,11 +178,11 @@ class InTeamFragment : Fragment() {
             try {
                 if (mainActivity.channel.isOpen) {
                     if (mainActivity.isCaptain) {
-                        mainActivity.channel.basicPublish(exchangeName, "", null, "close".toByteArray())
-                        mainActivity.channel.exchangeDelete(exchangeName)
+                        mainActivity.channel.basicPublish(mainActivity.exchangeName, "", null, "close".toByteArray())
+                        mainActivity.channel.exchangeDelete(mainActivity.exchangeName)
                     }
                     else {
-                        mainActivity.channel.basicPublish(exchangeName, "", null, "leave_${mainActivity.userAcnt}".toByteArray())
+                        mainActivity.channel.basicPublish(mainActivity.exchangeName, "", null, "leave_${mainActivity.userAcnt}".toByteArray())
                     }
                     mainActivity.channel.close()
                 }

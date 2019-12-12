@@ -7,6 +7,16 @@
     android:background="@drawable/background_star"
     tools:context=".MainActivity">
 
+    <ImageView
+        android:src="@drawable/background_item_2"
+        android:layout_margin="80dp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:contentDescription="anim_item"
+        app:layout_constraintTop_toTopOf="@id/circle"
+        app:layout_constraintBottom_toBottomOf="@id/circle"
+        app:layout_constraintLeft_toLeftOf="@id/circle"
+        app:layout_constraintRight_toRightOf="@id/circle" />
     <com.o1.timemanager.Circle
         android:id="@+id/circle"
         android:layout_width="match_parent"
@@ -49,7 +59,7 @@
         android:contentDescription="coin_icon"
         app:layout_constraintLeft_toLeftOf="@id/coin_value"
         app:layout_constraintTop_toTopOf="@id/coin_value"
-        app:srcCompat="@drawable/ic_coin_5" />
+        app:srcCompat="@drawable/ic_coin_7" />
 
     <com.google.android.material.button.MaterialButton
         android:id="@+id/begin"

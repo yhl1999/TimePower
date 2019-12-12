@@ -120,7 +120,7 @@ class HistoryFragment : Fragment() {
                     println(jsonObject.get("startT").asString)
                     mDataList.add(
                         TimeLineModel(
-                            jsonObject.get("actInfo").asString,
+                            jsonObject.get("actInfo").toString(),
                             jsonObject.get("startT").asString,
                             OrderStatus.COMPLETED
                         )

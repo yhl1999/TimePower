@@ -3,11 +3,11 @@ package com.o1.timemanager
 import android.content.Context
 import android.content.Intent
 import android.content.SharedPreferences
+import android.os.Build
 import android.os.Bundle
 import android.view.Menu
-import android.widget.ImageView
-import android.widget.TextView
-import android.widget.Toast
+import android.view.WindowManager
+import android.widget.*
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.GravityCompat
 import androidx.drawerlayout.widget.DrawerLayout
@@ -41,23 +41,28 @@ class MainActivity : AppCompatActivity() {
     var isLogin = false
     var username: String = ""
     var userAcnt: String = ""
-    lateinit var homeFragment: Fragment
+    lateinit var homeFragment: HomeFragment
     lateinit var backpackFragment: Fragment
     lateinit var lotteryFragment: Fragment
     lateinit var inTeamFragment: Fragment
     lateinit var outTeamFragment: Fragment
     lateinit var currentFragment: Fragment
     lateinit var historyFragment: Fragment
-    var minutes: Int = 0
-    var seconds: Int = 0
     lateinit var circle: Circle
+    lateinit var team: Button
+    lateinit var teamCheck: CheckBox
+    lateinit var begin: Button
     var teamUUID = ""
     lateinit var conn: Connection
     lateinit var channel: Channel
     var isCaptain = false
+    var exchangeName = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_STATUS);
+        window.addFlags(WindowManager.LayoutParams.FLAG_TRANSLUCENT_NAVIGATION);
+
         setContentView(R.layout.activity_main)
 
         sp = getSharedPreferences("info", Context.MODE_PRIVATE)
@@ -133,6 +138,15 @@ class MainActivity : AppCompatActivity() {
             textUsername.text = username
 
         }
+    }
+
+    fun teamBegin() {
+        circle.startTimer()
+        switchFragment(homeFragment).commit()
+        team.isEnabled = false
+        teamCheck.isEnabled = false
+        teamCheck.isChecked = false
+        begin.text = "放弃"
     }
 
     fun leaveTeam() {

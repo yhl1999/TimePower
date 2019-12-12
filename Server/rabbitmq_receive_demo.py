@@ -7,14 +7,14 @@ connection = pika.BlockingConnection(
 )
 channel = connection.channel()
 
-channel.exchange_declare(exchange='team_c8aa032b-d4d1-4552-b0ca-75970f654079', exchange_type='fanout')
+channel.exchange_declare(exchange='team_3bfac96e-f6b1-4c57-85af-773b95684ca6', exchange_type='fanout')
 
 result = channel.queue_declare(queue='', exclusive=True)
 queue_name = result.method.queue
 
-channel.queue_bind(exchange='team_c8aa032b-d4d1-4552-b0ca-75970f654079', queue=queue_name)
+channel.queue_bind(exchange='team_3bfac96e-f6b1-4c57-85af-773b95684ca6', queue=queue_name)
 
-print(' [*] Waiting for team_c8aa032b-d4d1-4552-b0ca-75970f654079. To exit press CTRL+C')
+print(' [*] Waiting for team_3bfac96e-f6b1-4c57-85af-773b95684ca6. To exit press CTRL+C')
 
 def callback(ch, method, properties, body):
     print(body)

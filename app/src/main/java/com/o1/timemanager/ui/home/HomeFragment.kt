@@ -9,7 +9,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProviders
-import com.google.gson.JsonArray
 import com.google.gson.JsonObject
 import com.o1.timemanager.Circle
 import com.o1.timemanager.MainActivity
@@ -17,7 +16,6 @@ import com.o1.timemanager.R
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
-import java.lang.Exception
 import java.util.*
 
 class HomeFragment : Fragment() {
@@ -28,6 +26,7 @@ class HomeFragment : Fragment() {
     lateinit var team: Button
     lateinit var coinValue: TextView
     lateinit var mainActivity: MainActivity
+    lateinit var teamCheck: CheckBox
     var added = false
 
     override fun onCreateView(
@@ -38,7 +37,7 @@ class HomeFragment : Fragment() {
         val root = inflater.inflate(R.layout.fragment_home, container, false)
 //        val textView = root.findViewById<TextView>(R.id.text_home)
 //        homeViewModel!!.text.observe(this, Observer { s -> textView.text = s })
-        val teamCheck: CheckBox = root.findViewById(R.id.isCoop)
+        teamCheck = root.findViewById(R.id.isCoop)
 
         begin = root.findViewById(R.id.begin)
         circle = root.findViewById(R.id.circle)
@@ -50,14 +49,12 @@ class HomeFragment : Fragment() {
         begin.setOnClickListener {
             if (teamCheck.isChecked) {
                 mainActivity.joinTeam(UUID.randomUUID().toString(), true)
-            }
-            else {
+            } else {
                 if (circle.timerStarted) {
-                    begin.text = "开始"
-                    circle.stopTimer()
+                    end()
+                    mainActivity.leaveTeam()
                 } else {
-                    begin.text = "暂停"
-                    circle.startTimer()
+                    start()
                 }
             }
         }
@@ -67,8 +64,7 @@ class HomeFragment : Fragment() {
         teamCheck.setOnCheckedChangeListener { buttonView, isChecked ->
             if (isChecked) {
                 begin.text = "开始组队"
-            }
-            else {
+            } else {
                 begin.text = "开始"
             }
         }
@@ -76,14 +72,29 @@ class HomeFragment : Fragment() {
         return root
     }
 
+    fun start() {
+        begin.text = "放弃"
+        circle.startTimer()
+        team.isEnabled = false
+        teamCheck.isEnabled = false
+    }
+
+    fun end() {
+        begin.text = "开始"
+        circle.stopTimer()
+        team.isEnabled = true
+        teamCheck.isEnabled = true
+    }
+
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         mainActivity = activity as MainActivity
         mainActivity.circle = circle
+        mainActivity.team = team
+        mainActivity.teamCheck = teamCheck
+        mainActivity.begin = begin
         if (mainActivity.isLogin) {
-
             loadData()
-
         }
     }
 
@@ -123,7 +134,8 @@ class HomeFragment : Fragment() {
                                         )
                                     )
                                     handler.postDelayed(this, 500)
-                                } catch (ignore: Exception) {}
+                                } catch (ignore: Exception) {
+                                }
                             }
                         }
                         handler.postDelayed(runnable, 500)
