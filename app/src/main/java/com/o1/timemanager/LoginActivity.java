@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.google.gson.JsonObject;
@@ -36,13 +37,12 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
         Button buttonLogin = findViewById(R.id.buttonLogin);
         Button buttonCancel = findViewById(R.id.buttonCancel);
         Button buttonRegister = findViewById(R.id.buttonRegister);
-        Button buttonModif = findViewById(R.id.buttonModif);
-
+        TextView textView = findViewById(R.id.textViewModif);
         buttonLogin.setOnClickListener(this);
         buttonCancel.setOnClickListener(this);
         buttonRegister.setOnClickListener(this);
-        buttonModif.setOnClickListener(this);
 
+        textView.setOnClickListener(this);
         usernameText = findViewById(R.id.username);
         passwordText = findViewById(R.id.password);
 
@@ -135,7 +135,7 @@ public class LoginActivity extends AppCompatActivity implements View.OnClickList
                 startActivity(inter);
                 finish();
                 break;
-            case R.id.buttonModif:
+            case R.id.textViewModif:
                 Intent inters = new Intent(LoginActivity.this, com.o1.timemanager.ModifActivity.class);
                 startActivity(inters);
                 finish();
