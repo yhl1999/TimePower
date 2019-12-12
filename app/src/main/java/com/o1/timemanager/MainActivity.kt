@@ -119,7 +119,9 @@ class MainActivity : AppCompatActivity() {
         val headerView = navigationView.getHeaderView(0)
         val avatar: ImageView = headerView.findViewById(R.id.avatar)
         avatar.setOnClickListener {
-            startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            if(!isLogin){
+                startActivity(Intent(this@MainActivity, LoginActivity::class.java))
+            }
         }
 
         val iconMenu: ImageView = findViewById(R.id.icon_menu)
