@@ -1,24 +1,38 @@
 package com.o1.timemanager.ui.history
 
+import android.annotation.SuppressLint
+import android.content.res.Resources
+import android.graphics.Color
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
 import android.widget.ListView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.github.vipulasri.timelineview.TimelineView
 import com.google.gson.JsonObject
-import com.o1.timemanager.Api
-import com.o1.timemanager.MainActivity
-import com.o1.timemanager.R
+import com.o1.timemanager.*
+import com.o1.timemanager.model.OrderStatus
+import com.o1.timemanager.model.Orientation
+import com.o1.timemanager.model.TimeLineModel
+import com.o1.timemanager.model.TimelineAttributes
+import kotlinx.android.synthetic.main.activity_history.*
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.ArrayList
 
 class HistoryFragment : Fragment() {
+
+    private val mDataList = ArrayList<TimeLineModel>()
+    private lateinit var mLayoutManager: LinearLayoutManager
+    private lateinit var mAttributes: TimelineAttributes
+
     lateinit var mainActivity: MainActivity
     lateinit var listHistory: ListView
     override fun onCreateView(
@@ -29,10 +43,48 @@ class HistoryFragment : Fragment() {
         val root = inflater.inflate(R.layout.activity_history, container, false)
         mainActivity = activity as MainActivity
 
-        listHistory = root.findViewById(R.id.listViewHistory)
-        loadData()
+        mAttributes = TimelineAttributes(
+            markerSize = (20f).px,
+            markerColor = Color.LTGRAY,
+            markerInCenter = true,
+            markerLeftPadding = (0f).px,
+            markerTopPadding = (0f).px,
+            markerRightPadding = (0f).px,
+            markerBottomPadding = (0f).px,
+            linePadding = (2f).px,
+            startLineColor = R.color.colorAccent,
+            endLineColor = R.color.colorAccent,
+            lineStyle = TimelineView.LineStyle.NORMAL,
+            lineWidth = (2f).px,
+            lineDashWidth = (4f).px,
+            lineDashGap = (2f).px
+        )
 
+        loadData()
         return root
+    }
+
+    private fun initRecyclerView() {
+        initAdapter()
+        recyclerView.addOnScrollListener(object : RecyclerView.OnScrollListener() {
+            @SuppressLint("LongLogTag")
+            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
+                super.onScrolled(recyclerView, dx, dy)
+            }
+        })
+    }
+
+    private fun initAdapter() {
+        mLayoutManager = if (mAttributes.orientation == Orientation.HORIZONTAL) {
+            LinearLayoutManager(context, RecyclerView.HORIZONTAL, false)
+        } else {
+            LinearLayoutManager(context, RecyclerView.VERTICAL, false)
+        }
+
+        recyclerView.apply {
+            layoutManager = mLayoutManager
+            adapter = TimeLineAdapter(mDataList, mAttributes)
+        }
     }
 
     override fun onHiddenChanged(hidden: Boolean) {
@@ -62,20 +114,19 @@ class HistoryFragment : Fragment() {
                 }
                 //解析返回的JSONs
                 val jsondata = response.body()!!["actList"].asJsonArray
-                val dataList: MutableList<String> = mutableListOf()
-                var i = 0
-                val size = jsondata.size()
-                while (i < size) {
-                    dataList.add(jsondata[i].toString())
-                    i++
+                mDataList.clear()
+                for (data in jsondata) {
+                    val jsonObject = data as JsonObject
+                    println(jsonObject.get("startT").asString)
+                    mDataList.add(
+                        TimeLineModel(
+                            jsonObject.get("actInfo").asString,
+                            jsonObject.get("startT").asString,
+                            OrderStatus.COMPLETED
+                        )
+                    )
                 }
-                //适配器
-                val adapter = ArrayAdapter(
-                    context!!,
-                    android.R.layout.simple_list_item_1,
-                    dataList
-                )
-                listHistory.adapter = adapter
+                initRecyclerView()
             }
 
             override fun onFailure(
@@ -87,4 +138,8 @@ class HistoryFragment : Fragment() {
         })
 
     }
+    val Float.dp: Float
+        get() = this / Resources.getSystem().displayMetrics.density
+    val Float.px: Int
+        get() = (this * Resources.getSystem().displayMetrics.density).toInt()
 }

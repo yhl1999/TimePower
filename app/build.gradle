@@ -46,4 +46,5 @@ dependencies {
     implementation 'com.rabbitmq:amqp-client:5.7.3'
     implementation('com.journeyapps:zxing-android-embedded:3.6.0') { transitive = false }
     implementation 'com.google.zxing:core:3.4.0'
+    implementation 'com.github.vipulasri:timelineview:1.1.2'
 }
